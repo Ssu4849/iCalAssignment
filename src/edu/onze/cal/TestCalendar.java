@@ -11,6 +11,8 @@ import java.util.Scanner;
  */
 public class TestCalendar {
 
+	//This is a test comment
+	
 	static Scanner sc;
 	
 	/**
@@ -42,6 +44,22 @@ public class TestCalendar {
 		
 		testCal.addEvent(timeStart, timeEnd, summary, description, location);
 
+		Event event = new Event();
+		
+		
+		StringBuilder sb = new StringBuilder();
+		
+		String s = "DESCRIPTION:"+description+"\r\n";
+		
+		System.out.println(event.addDescription(description));
+		
+		if (event.addDescription(description).compareTo(s) == 0) {
+			System.out.println("PASS");
+		}
+		else {
+			System.out.println("FAIL");
+		}
+		
 		try {
 			FileWriter fw = new FileWriter(testCal.getFile() + ".ics");
 
