@@ -11,11 +11,10 @@ import java.util.Scanner;
  */
 public class TestCalendar {
 
-	//This is a test comment
-	//This is another test comment
-	
+//this is a comment from atom
+
 	static Scanner sc;
-	
+
 	/**
 	 * @param args
 	 */
@@ -27,40 +26,40 @@ public class TestCalendar {
 		File file = new File(fileName);
 
 		iCalObj testCal = new iCalObj(file);
-		
+
 		System.out.println("Enter the time the event starts (Eg, 20160225T220000Z):");
 		String timeStart = sc.nextLine();
-		
+
 		System.out.println("Enter the time the event ends (Eg, 20160225T221500Z)");
 		String timeEnd = sc.nextLine();
-		
+
 		System.out.println("Enter a summary of the event: ");
 		String summary = sc.nextLine();
-		
+
 		System.out.println("Enter the location ");
 		String location = sc.nextLine();
-	
+
 		System.out.println("Enter a description of the event, or leave it blank");
 		String description = sc.nextLine();
-		
+
 		testCal.addEvent(timeStart, timeEnd, summary, description, location);
 
 		Event event = new Event();
-		
-		
+
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		String s = "DESCRIPTION:"+description+"\r\n";
-		
+
 		System.out.println(event.addDescription(description));
-		
+
 		if (event.addDescription(description).compareTo(s) == 0) {
 			System.out.println("PASS");
 		}
 		else {
 			System.out.println("FAIL");
 		}
-		
+
 		try {
 			FileWriter fw = new FileWriter(testCal.getFile() + ".ics");
 
