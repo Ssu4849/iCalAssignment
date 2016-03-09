@@ -2,6 +2,7 @@
 package edu.onze.cal;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,8 +55,8 @@ public class iCalObj {
 	/**
 	 * Instantiates an iCalendar object with no components
 	 */
-	public iCalObj(File fileName) {
-		file = fileName;
+	public iCalObj(File file) {
+		this.file = file;
 		content = new StringBuilder();
 		content.append(CALENDAR_HEADER);
 		content.append(PRODID);
@@ -77,15 +78,28 @@ public class iCalObj {
 	 * @param location
 	 *            location of activity
 	 */
-	public void addEvent(String dateStart, String dateEnd, String summary, String description, String location) {
+	public void addEvent(String dateStart, String dateEnd, String summary, String description, String location,
+			String geoPosition) {
 		Event event = new Event();
 		String dateStartParsed = "";
 		String dateEndParsed = "";
 
 		event.addDescription(description);
-		event.addLocation(location);
 		event.addSummary(summary);
-		
+
+		if (location.compareTo("") != 0) {
+			event.addLocation(location);
+		}
+
+		if (geoPosition.compareTo("") != 0) {
+			try {
+				String formattedPosition = parseGeographicPosition(geoPosition);
+				event.addGeoPosition(formattedPosition);
+			} catch (IllegalArgumentException e) {
+				System.err.println("Longitude range [-180,180] Latitude range [-90, 90]");
+			}
+		}
+
 		try {
 			dateStartParsed = parseDate(dateStart);
 			dateEndParsed = parseDate(dateEnd);
@@ -105,6 +119,7 @@ public class iCalObj {
 	 * @param date
 	 *            the date to format
 	 * @return the formatted date
+	 * @throws ParseException if input date is not in the correct format
 	 */
 	private String parseDate(String date) throws ParseException {
 		String returnStr = "";
@@ -114,6 +129,41 @@ public class iCalObj {
 
 		originalDate = originalFormat.parse(date);
 		returnStr = targetFormat.format(originalDate);
+		return returnStr;
+	}
+
+	/**
+	 * Formats the geographic position
+	 * 
+	 * @param position
+	 *            the position to format
+	 * @return the formatted position
+	 * @throws illegalArgumentException
+	 *             if longitude/latitude degree is out of range
+	 */
+	private String parseGeographicPosition(String position) {
+		String returnStr = "";
+
+		String latlon[] = position.split(" ");
+		String latDegMinSec[] = latlon[0].split(",");
+		String lonDegMinSec[] = latlon[1].split(",");
+
+		if (Double.parseDouble(latDegMinSec[0]) > 90 || Double.parseDouble(latDegMinSec[0]) < -90) {
+			throw new IllegalArgumentException();
+		}
+		if (Double.parseDouble(lonDegMinSec[0]) > 180 || Double.parseDouble(lonDegMinSec[0]) < -180) {
+			throw new IllegalArgumentException();
+		}
+
+		Double degreeLat = Double.parseDouble(latDegMinSec[0]) + Double.parseDouble(latDegMinSec[1]) / 60
+				+ Double.parseDouble(latDegMinSec[2]) / 3600;
+		Double degreeLon = Double.parseDouble(lonDegMinSec[0]) + Double.parseDouble(lonDegMinSec[1]) / 60
+				+ Double.parseDouble(lonDegMinSec[2]) / 3600;
+
+		Double truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).doubleValue();
+		Double truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).doubleValue();
+
+		returnStr = truncDegLat + ";" + truncDegLon;
 		return returnStr;
 	}
 

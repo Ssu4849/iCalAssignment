@@ -42,7 +42,7 @@ public class Event extends Component {
 	public String addDateSpan(String dateStart, String dateEnd) {
 		String dateStartLine = "";
 		String dateEndLine = "";
-		
+
 		if (dateStart.compareTo(dateEnd) > 0) {
 			throw new IllegalArgumentException();
 		} else {
@@ -53,14 +53,6 @@ public class Event extends Component {
 		}
 		return dateStartLine + dateEndLine;
 	}
-
-	// private String addTimeStart(String timeStart) {
-	// return content.append(DTSTART_PROPERTY + timeStart + CRLF).toString();
-	// }
-	//
-	// private String addTimeEnd(String timeEnd) {
-	// return content.append(DTEND_PROPERTY + timeEnd + CRLF).toString();
-	// }
 
 	@Override
 	public String addSummary(String summary) {
@@ -73,7 +65,7 @@ public class Event extends Component {
 			returnStr = sumLine;
 		}
 		return returnStr;
-	
+
 	}
 
 	/**
@@ -111,6 +103,26 @@ public class Event extends Component {
 			content.append(locLine);
 			returnStr = locLine;
 		}
+		return returnStr;
+	}
+	
+	/**
+	 * Adds a geographic position to the event. 
+	 * 
+	 * @param location
+	 *            the location of the event
+	 * @return the line to add to the ics file under event component
+	 */
+	public String addGeoPosition(String position) {
+		String returnStr = "";
+		String geoLine = LOCATION_PROPERTY + position + CRLF;
+		if (geoLine.compareTo("") == 0) {
+			returnStr = "";
+		} else {
+			content.append(geoLine);
+			returnStr = geoLine;
+		}
+		System.out.println(geoLine);
 		return returnStr;
 	}
 

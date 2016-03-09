@@ -11,8 +11,6 @@ import java.util.Scanner;
  */
 public class TestCalendar {
 
-//today is 3/4
-
 	static Scanner sc;
 
 	/**
@@ -42,7 +40,11 @@ public class TestCalendar {
 		System.out.println("Enter a description of the event, or leave it blank");
 		String description = sc.nextLine();
 
-		testCal.addEvent(timeStart, timeEnd, summary, description, location);
+		System.out.println("Enter the Geographic Position of the event: Latitude [space] longitude, or leave it blank \n"
+						+ "	(format: <degrees>,<minutes>,<seconds> <degrees>,<minutes>,<seconds>)");
+		String geoPosition = sc.nextLine();
+
+		testCal.addEvent(timeStart, timeEnd, summary, description, location, geoPosition);
 
 		try {
 			FileWriter fw = new FileWriter(testCal.getFile() + ".ics");
