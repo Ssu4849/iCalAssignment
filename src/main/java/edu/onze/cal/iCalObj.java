@@ -160,9 +160,9 @@ public class iCalObj {
 		Double degreeLon = Double.parseDouble(lonDegMinSec[0]) + Double.parseDouble(lonDegMinSec[1]) / 60
 				+ Double.parseDouble(lonDegMinSec[2]) / 3600;
 
-		Double truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).doubleValue();
-		Double truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).doubleValue();
-
+		String truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).toString();
+		String truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).toString();
+		
 		returnStr = truncDegLat + ";" + truncDegLon;
 		return returnStr;
 	}

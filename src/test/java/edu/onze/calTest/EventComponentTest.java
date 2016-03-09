@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * @author Sheng
+ * @author Team Onze
  *
  */
 public class EventComponentTest {

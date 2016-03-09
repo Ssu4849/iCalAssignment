@@ -26,6 +26,7 @@ public class Event extends Component {
 	public static final String DTEND_PROPERTY = "DTEND:";
 	public static final String SUMMARY_PROPERTY = "SUMMARY:";
 	public static final String LOCATION_PROPERTY = "LOCATION:";
+	public static final String GEOGRAPHIC_LOCATION_PROPERTY = "GEO:";
 
 	/** Stores the content of this calendar object */
 	private StringBuilder content;
@@ -115,14 +116,13 @@ public class Event extends Component {
 	 */
 	public String addGeoPosition(String position) {
 		String returnStr = "";
-		String geoLine = LOCATION_PROPERTY + position + CRLF;
+		String geoLine = GEOGRAPHIC_LOCATION_PROPERTY + position + CRLF;
 		if (geoLine.compareTo("") == 0) {
 			returnStr = "";
 		} else {
 			content.append(geoLine);
 			returnStr = geoLine;
 		}
-		System.out.println(geoLine);
 		return returnStr;
 	}
 
