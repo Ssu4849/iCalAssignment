@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -52,6 +54,11 @@ public class iCalObj {
 	 */
 	private File file;
 
+	/**
+	 * component list
+	 */
+	List<Component> componentList = new ArrayList<Component>();
+	
 	/**
 	 * Instantiates an iCalendar object with no components
 	 */
@@ -103,7 +110,7 @@ public class iCalObj {
 		try {
 			dateStartParsed = parseDate(dateStart);
 			dateEndParsed = parseDate(dateEnd);
-			event.addDateSpan(dateStartParsed, dateEndParsed);
+			event.addTimeDateSpan(dateStartParsed, dateEndParsed);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Start date is > end date!");
 		} catch (ParseException p) {
@@ -119,7 +126,8 @@ public class iCalObj {
 	 * @param date
 	 *            the date to format
 	 * @return the formatted date
-	 * @throws ParseException if input date is not in the correct format
+	 * @throws ParseException
+	 *             if input date is not in the correct format
 	 */
 	private String parseDate(String date) throws ParseException {
 		String returnStr = "";
@@ -148,6 +156,7 @@ public class iCalObj {
 		String latDegMinSec[] = latlon[0].split(",");
 		String lonDegMinSec[] = latlon[1].split(",");
 
+		// Checks if -90<latitude<90 and -180<longitude<180
 		if (Double.parseDouble(latDegMinSec[0]) > 90 || Double.parseDouble(latDegMinSec[0]) < -90) {
 			throw new IllegalArgumentException();
 		}
@@ -162,7 +171,7 @@ public class iCalObj {
 
 		String truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).toString();
 		String truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).toString();
-		
+
 		returnStr = truncDegLat + ";" + truncDegLon;
 		return returnStr;
 	}

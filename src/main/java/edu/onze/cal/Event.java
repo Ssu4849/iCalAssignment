@@ -40,18 +40,17 @@ public class Event extends Component {
 	}
 
 	@Override
-	public String addDateSpan(String dateStart, String dateEnd) {
+	public String addTimeDateSpan(String dateStart, String dateEnd) {
 		String dateStartLine = "";
 		String dateEndLine = "";
-
 		if (dateStart.compareTo(dateEnd) > 0) {
 			throw new IllegalArgumentException();
-		} else {
-			dateStartLine = DTSTART_PROPERTY + dateStart + CRLF;
-			dateEndLine = DTEND_PROPERTY + dateEnd + CRLF;
-			content.append(dateStartLine);
-			content.append(dateEndLine);
 		}
+		dateStartLine = DTSTART_PROPERTY + dateStart + CRLF;
+		dateEndLine = DTEND_PROPERTY + dateEnd + CRLF;
+		content.append(dateStartLine);
+		content.append(dateEndLine);
+
 		return dateStartLine + dateEndLine;
 	}
 
@@ -106,9 +105,9 @@ public class Event extends Component {
 		}
 		return returnStr;
 	}
-	
+
 	/**
-	 * Adds a geographic position to the event. 
+	 * Adds a geographic position to the event.
 	 * 
 	 * @param location
 	 *            the location of the event
