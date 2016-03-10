@@ -3,6 +3,7 @@ package edu.onze.cal;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.util.Scanner;
 
 /**
@@ -41,6 +42,7 @@ public class TestCalendar {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Month, date, or year is not a valid integer");
+			System.exit(0);
 		}
 		try {
 			String time = dateTimeStart.split(" ")[1];
@@ -49,6 +51,7 @@ public class TestCalendar {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Hour, second, or time is not a valid integer");
+			System.exit(0);
 		}
 
 		System.out.println("Enter the time the event end (Format: YYYY-MM-DD HH:MM:SS)");
@@ -67,6 +70,7 @@ public class TestCalendar {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Month, date, or year is not a valid integer");
+			System.exit(0);
 		}
 		try {
 			String time = dateTimeEnd.split(" ")[1];
@@ -75,6 +79,7 @@ public class TestCalendar {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Hour, second, or time is not a valid integer");
+			System.exit(0);
 		}
 
 		System.out.println("Enter a summary of the event: ");
@@ -90,19 +95,40 @@ public class TestCalendar {
 				.println("Enter the Geographic Position of the event: Latitude [space] longitude, or leave it blank \n"
 						+ "	(format: <degrees>,<minutes>,<seconds> <degrees>,<minutes>,<seconds>)");
 		String geoPosition = sc.nextLine();
-		
+
+		System.out.println("Enter 1 for the event to be PUBLIC, 2 for PRIVATE, and 3 for CONFIDENTIAL");
+		String classification = sc.nextLine();
+		int classificationChoice = 1;
+		// Validates if user input is a number
+		try {
+			classificationChoice = Integer.parseInt(classification);
+		} catch (NumberFormatException e) {
+			System.err.println("Not a number");
+			System.exit(0);
+		}
+
+		// Validates if user input is within range [1,3]
+		// if not, defaults to PUBLIC
+		if (classificationChoice < 1 || classificationChoice > 3) {
+			System.err.println("Not within range. Defaulting classification to PUBLIC");
+			classificationChoice = 1;
+		}
+
 		// validates geographic position format
 		String[] latLongArray = geoPosition.split(" ");
 		if (latLongArray.length != 2) {
 			System.err.println("Geographic position is not the correct format");
+			System.exit(0);
 		}
 		if (latLongArray[0].split(",").length != 3) {
 			System.err.println("Latitude is not the correct format");
+			System.exit(0);
 		}
 		if (latLongArray[1].split(",").length != 3) {
 			System.err.println("Longitude is not the correct format");
+			System.exit(0);
 		}
-		
+
 		// Parses User input for anything != a decimal
 		try {
 			for (String latLong : geoPosition.split(" ")) {
@@ -112,9 +138,22 @@ public class TestCalendar {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("Geographic position not a decimal");
+			System.exit(0);
 		}
 
-		testCal.addEvent(dateTimeStart, dateTimeEnd, summary, description, location, geoPosition);
+		try {
+			Event event1 = testCal.createEvent(dateTimeStart, dateTimeEnd, summary, description, location);
+			event1.addGeoPosition(geoPosition);
+		} catch (IllegalArgumentException e) {
+			System.err.println(e.getMessage());
+			System.exit(0);
+		} catch (ParseException e) {
+			System.err.println("Date is incorrect format. Usage: 'YYYY-MM-DD HH:MM:SS'");
+			System.exit(0);
+		} catch (IllegalStateException e) {
+			System.err.println(e.getMessage());
+			System.exit(0);
+		}
 
 		try {
 			FileWriter fw = new FileWriter(testCal.getFile() + ".ics");
@@ -126,5 +165,4 @@ public class TestCalendar {
 			e.printStackTrace();
 		}
 	}
-
 }

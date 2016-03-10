@@ -1,5 +1,11 @@
 package edu.onze.cal;
 
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * This class defines the VEVENT component
  * 
@@ -27,31 +33,87 @@ public class Event extends Component {
 	public static final String SUMMARY_PROPERTY = "SUMMARY:";
 	public static final String LOCATION_PROPERTY = "LOCATION:";
 	public static final String GEOGRAPHIC_LOCATION_PROPERTY = "GEO:";
+	public static final String CLASSIFICATION_PROPERTY = "CLASS:";
 
-	/** Stores the content of this calendar object */
-	private StringBuilder content;
+	/**
+	 * Stores the strings of classification types
+	 */
+	public static final String PUBLIC = "PUBLIC";
+	public static final String PRIVATE = "PRIVATE";
+	public static final String CONFIDENTIAL = "CONFIDENTIAL";
+
+	/**
+	 * Stores the properties of event component
+	 */
+	private StringBuilder props;
+
+	/**
+	 * ISO.8601.2004 format compatible with iCalendar
+	 */
+	public static final String ISO_8601_FORMAT = "yyyyMMdd'T'HHmmss";
+
+	/**
+	 * Date format provided by the user
+	 */
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	/**
 	 * Instantiates an empty Event component
 	 */
 	public Event() {
-		content = new StringBuilder();
-		content.append(EVENT_HEADER);
+		props = new StringBuilder();
+		props.append(EVENT_HEADER);
 	}
 
+	/**
+	 * @throws IllegalArgumentException
+	 *             if dateEnd > dateStart
+	 * @throws Parse
+	 *             Exception is date is incorrect format
+	 */
 	@Override
-	public String addTimeDateSpan(String dateStart, String dateEnd) {
+	public String addTimeDateSpan(String dateStart, String dateEnd) throws ParseException {
 		String dateStartLine = "";
 		String dateEndLine = "";
-		if (dateStart.compareTo(dateEnd) > 0) {
-			throw new IllegalArgumentException();
+		String dateStartParsed = "";
+		String dateEndParsed = "";
+
+		if (endDateGtrStartDate(dateStart, dateEnd)) {
+			throw new IllegalArgumentException("Start date is > end date!");
 		}
-		dateStartLine = DTSTART_PROPERTY + dateStart + CRLF;
-		dateEndLine = DTEND_PROPERTY + dateEnd + CRLF;
-		content.append(dateStartLine);
-		content.append(dateEndLine);
+
+		dateStartParsed = parseDate(dateStart);
+		dateEndParsed = parseDate(dateEnd);
+		dateStartLine = DTSTART_PROPERTY + dateStartParsed + CRLF;
+		dateEndLine = DTEND_PROPERTY + dateEndParsed + CRLF;
+		props.append(dateStartLine);
+		props.append(dateEndLine);
 
 		return dateStartLine + dateEndLine;
+	}
+
+	/**
+	 * Formats the date string into ISO_8601.2004 format
+	 * 
+	 * @param date
+	 *            the date to format
+	 * @return the formatted date
+	 * @throws ParseException
+	 *             if input date is not in the correct format
+	 */
+	private String parseDate(String date) throws ParseException {
+		String returnStr = "";
+		DateFormat originalFormat = new SimpleDateFormat(DATE_FORMAT);
+		DateFormat targetFormat = new SimpleDateFormat(ISO_8601_FORMAT);
+		Date originalDate = null;
+
+		originalDate = originalFormat.parse(date);
+		returnStr = targetFormat.format(originalDate);
+		return returnStr;
+	}
+
+	private boolean endDateGtrStartDate(String dateStart, String dateEnd) {
+		return dateStart.compareTo(dateEnd) > 0;
 	}
 
 	@Override
@@ -61,7 +123,7 @@ public class Event extends Component {
 		if (summary.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			content.append(sumLine);
+			props.append(sumLine);
 			returnStr = sumLine;
 		}
 		return returnStr;
@@ -81,7 +143,7 @@ public class Event extends Component {
 		if (description.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			content.append(descLine);
+			props.append(descLine);
 			returnStr = descLine;
 		}
 		return returnStr;
@@ -100,7 +162,7 @@ public class Event extends Component {
 		if (location.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			content.append(locLine);
+			props.append(locLine);
 			returnStr = locLine;
 		}
 		return returnStr;
@@ -112,15 +174,89 @@ public class Event extends Component {
 	 * @param location
 	 *            the location of the event
 	 * @return the line to add to the ics file under event component
+	 * @throws IllegalStateException
+	 *             if geoposition is out of range
 	 */
-	public String addGeoPosition(String position) {
+	public String addGeoPosition(String geoPosition) throws IllegalStateException {
 		String returnStr = "";
-		String geoLine = GEOGRAPHIC_LOCATION_PROPERTY + position + CRLF;
+		String geoPositionFormatted = "";
+		String geoLine = "";
+		if (geoPosition.compareTo("") != 0) {
+			geoPositionFormatted = parseGeographicPosition(geoPosition);
+			geoLine = GEOGRAPHIC_LOCATION_PROPERTY + geoPositionFormatted + CRLF;
+		}
+
 		if (geoLine.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			content.append(geoLine);
+			props.append(geoLine);
 			returnStr = geoLine;
+		}
+		return returnStr;
+	}
+
+	/**
+	 * Formats the geographic position
+	 * 
+	 * @param position
+	 *            the position to format
+	 * @return the formatted position
+	 * @throws illegalArgumentException
+	 *             if longitude/latitude degree is out of range
+	 */
+	private String parseGeographicPosition(String position) {
+		String returnStr = "";
+
+		String latlon[] = position.split(" ");
+		String latDegMinSec[] = latlon[0].split(",");
+		String lonDegMinSec[] = latlon[1].split(",");
+
+		// Checks if -90<latitude<90 and -180<longitude<180
+		if (Double.parseDouble(latDegMinSec[0]) > 90 || Double.parseDouble(latDegMinSec[0]) < -90) {
+			throw new IllegalStateException("Latitude range should be [-90,90]");
+		}
+		if (Double.parseDouble(lonDegMinSec[0]) > 180 || Double.parseDouble(lonDegMinSec[0]) < -180) {
+			throw new IllegalStateException("Longitude range should be [-180,180]");
+		}
+
+		Double degreeLat = Double.parseDouble(latDegMinSec[0]) + Double.parseDouble(latDegMinSec[1]) / 60
+				+ Double.parseDouble(latDegMinSec[2]) / 3600;
+		Double degreeLon = Double.parseDouble(lonDegMinSec[0]) + Double.parseDouble(lonDegMinSec[1]) / 60
+				+ Double.parseDouble(lonDegMinSec[2]) / 3600;
+
+		String truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).toString();
+		String truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).toString();
+
+		returnStr = truncDegLat + ";" + truncDegLon;
+		return returnStr;
+	}
+
+	/**
+	 * @see <a href="https://tools.ietf.org/html/rfc2445#section-4.8.1.3">https:
+	 *      //tools.ietf.org/html/rfc2445#section-4.8.1.3</a>
+	 * @param access
+	 *            "PUBLIC" / "PRIVATE" / "CONFIDENTIAL" default is "PUBLIC"
+	 * @return the classification type added to the event
+	 */
+	public String setClassification(String access) {
+		String returnStr = "";
+
+		switch (access) {
+		case "PRIVATE":
+			String s1 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+			props.append(s1);
+			returnStr = s1;
+			break;
+		case "CONFIDENTIAL":
+			String s2 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
+			props.append(s2);
+			returnStr = s2;
+			break;
+		default:
+			String s3 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+			props.append(s3);
+			returnStr = s3;
+			break;
 		}
 		return returnStr;
 	}
@@ -129,6 +265,6 @@ public class Event extends Component {
 	 * appends event trailer tag to the event component and returns the string
 	 */
 	public String getContent() {
-		return content.append(EVENT_TRAILER).toString();
+		return props.append(EVENT_TRAILER).toString();
 	}
 }
