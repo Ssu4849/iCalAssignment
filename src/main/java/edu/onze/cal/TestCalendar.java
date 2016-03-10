@@ -144,6 +144,7 @@ public class TestCalendar {
 		try {
 			Event event1 = testCal.createEvent(dateTimeStart, dateTimeEnd, summary, description, location);
 			event1.addGeoPosition(geoPosition);
+			event1.setClassification(classificationChoice);
 		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			System.exit(0);

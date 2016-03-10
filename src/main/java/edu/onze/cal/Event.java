@@ -238,16 +238,16 @@ public class Event extends Component {
 	 *            "PUBLIC" / "PRIVATE" / "CONFIDENTIAL" default is "PUBLIC"
 	 * @return the classification type added to the event
 	 */
-	public String setClassification(String access) {
+	public String setClassification(int access) {
 		String returnStr = "";
 
 		switch (access) {
-		case "PRIVATE":
+		case 2:
 			String s1 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
 			props.append(s1);
 			returnStr = s1;
 			break;
-		case "CONFIDENTIAL":
+		case 3:
 			String s2 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
 			props.append(s2);
 			returnStr = s2;
