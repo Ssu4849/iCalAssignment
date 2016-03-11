@@ -102,8 +102,8 @@ public class Event extends Component {
 		dateStartLine = DTSTART_PROPERTY_TAG + dateStartParsed + CRLF;
 		dateEndLine = DTEND_PROPERTY_TAG + dateEndParsed + CRLF;
 
-		propList.add(new Dtstart(dateStartLine));
-		propList.add(new Dtend(dateEndLine));
+		addProperty(new Dtstart(dateStartLine));
+		addProperty(new Dtend(dateEndLine));
 
 		return dateStartLine + dateEndLine;
 	}
@@ -139,7 +139,7 @@ public class Event extends Component {
 		if (summary.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			propList.add(new Summary(sumLine));
+			addProperty(new Summary(sumLine));
 			returnStr = sumLine;
 		}
 		return returnStr;
@@ -159,7 +159,7 @@ public class Event extends Component {
 		if (description.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			propList.add(new Description(descLine));
+			addProperty(new Description(descLine));
 			returnStr = descLine;
 		}
 		return returnStr;
@@ -178,7 +178,7 @@ public class Event extends Component {
 		if (location.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			propList.add(new Location(locLine));
+			addProperty(new Location(locLine));
 			returnStr = locLine;
 		}
 		return returnStr;
@@ -200,7 +200,7 @@ public class Event extends Component {
 		if (geoPosition.compareTo("") != 0) {
 			geoPositionFormatted = parseGeographicPosition(geoPosition);
 			geoLine = GEOGRAPHIC_LOCATION_PROPERTY_TAG + geoPositionFormatted + CRLF;
-			propList.add(new Geo(geoLine));
+			addProperty(new Geo(geoLine));
 		}
 
 		if (geoLine.compareTo("") == 0) {
@@ -235,6 +235,7 @@ public class Event extends Component {
 			throw new IllegalStateException("Longitude range should be [-180,180]");
 		}
 
+		// Formula Degree(decimal) = Degree + Minute/60 + Seconds/3600
 		Double degreeLat = Double.parseDouble(latDegMinSec[0]) + Double.parseDouble(latDegMinSec[1]) / 60
 				+ Double.parseDouble(latDegMinSec[2]) / 3600;
 		Double degreeLon = Double.parseDouble(lonDegMinSec[0]) + Double.parseDouble(lonDegMinSec[1]) / 60
@@ -278,33 +279,43 @@ public class Event extends Component {
 		return returnStr;
 	}
 
-	public void addPropNoFormatRequired(String line) {
-		switch (line.substring(0, (line.indexOf(":") + 1))) {
-		
+	/**
+	 * Adds a property to the event without formatting. Use this when a line
+	 * when reading from ics file
+	 * 
+	 * @param line
+	 *            the current line that is a property
+	 * @throws IllegalArgumentException
+	 *             if an unique property is added twice
+	 */
+	public void addPropNoFormatRequired(String line) throws IllegalArgumentException {
+		String propHeader = line.substring(0, line.indexOf(":") + 1);
+		switch (propHeader) {
+
 		case CLASSIFICATION_PROPERTY_TAG:
-			propList.add(new Classification(line + CRLF));
+			addProperty(new Classification(line + CRLF));
 			break;
 		case DESCRIPTION_PROPERTY_TAG:
-			propList.add(new Description(line + CRLF));
+			addProperty(new Description(line + CRLF));
 			break;
 		case DTSTART_PROPERTY_TAG:
-			propList.add(new Dtstart(line + CRLF));
+			addProperty(new Dtstart(line + CRLF));
 			break;
 		case DTEND_PROPERTY_TAG:
-			propList.add(new Dtend(line + CRLF));
+			addProperty(new Dtend(line + CRLF));
 			break;
 		case LOCATION_PROPERTY_TAG:
-			propList.add(new Location(line + CRLF));
+			addProperty(new Location(line + CRLF));
 			break;
 		case GEOGRAPHIC_LOCATION_PROPERTY_TAG:
-			propList.add(new Geo(line + CRLF));
+			addProperty(new Geo(line + CRLF));
 			break;
 		case SUMMARY_PROPERTY_TAG:
-			propList.add(new Summary(line + CRLF));
+			addProperty(new Summary(line + CRLF));
 			break;
-		default: 
-			System.err.println("Tag unsupported: " + line.substring(0, (line.indexOf(":"))));
-		break;
+		default:
+			System.err.println("Property unsupported: " + line.substring(0, (line.indexOf(":"))));
+			break;
 		}
 	}
 
@@ -317,11 +328,26 @@ public class Event extends Component {
 		}
 		return props.append(EVENT_TRAILER + CRLF).toString();
 	}
-	
+
 	/**
 	 * @return the number of properties this event contain
 	 */
 	public int getPropertySize() {
 		return this.propList.size();
+	}
+
+	/**
+	 * Adds a property to the property list
+	 */
+	private void addProperty(Property property) {
+		if (property.isUnique()) {
+			if (this.propList.contains(property)) {
+				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
+			} else {
+				this.propList.add(property);
+			}
+		} else {
+			this.propList.add(property);
+		}
 	}
 }

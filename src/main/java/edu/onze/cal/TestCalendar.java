@@ -215,12 +215,18 @@ public class TestCalendar {
 			if (line.equals(Event.EVENT_HEADER)) {
 				Event event = new Event();
 				while ((line = br.readLine()) != null && !line.equals(Event.EVENT_TRAILER)) {
-					event.addPropNoFormatRequired(line);
+					try {
+						System.out.println(line);
+						event.addPropNoFormatRequired(line);
+					} catch (IllegalArgumentException e) {
+						System.err.println(e.getMessage());
+						System.err.println("skipping line...");
+					}
 				}
 				calObj.addEvent(event);
 			}
 		}
-//		System.out.println(calObj);
+		System.out.println(calObj);
 		fr.close();
 	}
 
