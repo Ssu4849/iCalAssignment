@@ -6,6 +6,7 @@ package edu.onze.calTest;
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -214,7 +215,6 @@ public class EventComponentTest {
 	public void testSizeOfPropertyList() {
 		Event event = new Event();
 		event.addDescription("Test Description");
-		
 		assertEquals(event.getPropertySize(), 1);
 	}
 }
