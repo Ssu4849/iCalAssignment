@@ -94,12 +94,11 @@ public class Event extends Component {
 		String dateStartParsed = "";
 		String dateEndParsed = "";
 
+		dateStartParsed = parseDate(dateStart);
+		dateEndParsed = parseDate(dateEnd);
 		if (endDateGtrStartDate(dateStart, dateEnd)) {
 			throw new IllegalArgumentException("Start date is > end date!");
 		}
-
-		dateStartParsed = parseDate(dateStart);
-		dateEndParsed = parseDate(dateEnd);
 		dateStartLine = DTSTART_PROPERTY_TAG + dateStartParsed + CRLF;
 		dateEndLine = DTEND_PROPERTY_TAG + dateEndParsed + CRLF;
 
