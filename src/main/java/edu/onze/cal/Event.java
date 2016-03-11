@@ -4,7 +4,18 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import edu.onze.cal.props.Classification;
+import edu.onze.cal.props.Description;
+import edu.onze.cal.props.Dtend;
+import edu.onze.cal.props.Dtstart;
+import edu.onze.cal.props.Geo;
+import edu.onze.cal.props.Location;
+import edu.onze.cal.props.Property;
+import edu.onze.cal.props.Summary;
 
 /**
  * This class defines the VEVENT component
@@ -27,13 +38,13 @@ public class Event extends Component {
 	/**
 	 * These parameters are optional
 	 */
-	public static final String DESCRIPTION_PROPERTY = "DESCRIPTION:";
-	public static final String DTSTART_PROPERTY = "DTSTART:";
-	public static final String DTEND_PROPERTY = "DTEND:";
-	public static final String SUMMARY_PROPERTY = "SUMMARY:";
-	public static final String LOCATION_PROPERTY = "LOCATION:";
-	public static final String GEOGRAPHIC_LOCATION_PROPERTY = "GEO:";
-	public static final String CLASSIFICATION_PROPERTY = "CLASS:";
+	public static final String DESCRIPTION_PROPERTY_TAG = "DESCRIPTION:";
+	public static final String DTSTART_PROPERTY_TAG = "DTSTART:";
+	public static final String DTEND_PROPERTY_TAG = "DTEND:";
+	public static final String SUMMARY_PROPERTY_TAG = "SUMMARY:";
+	public static final String LOCATION_PROPERTY_TAG = "LOCATION:";
+	public static final String GEOGRAPHIC_LOCATION_PROPERTY_TAG = "GEO:";
+	public static final String CLASSIFICATION_PROPERTY_TAG = "CLASS:";
 
 	/**
 	 * Stores the strings of classification types
@@ -66,6 +77,11 @@ public class Event extends Component {
 	}
 
 	/**
+	 * Props list
+	 */
+	private List<Property> propList = new ArrayList<Property>();
+
+	/**
 	 * @throws IllegalArgumentException
 	 *             if dateEnd > dateStart
 	 * @throws Parse
@@ -84,10 +100,11 @@ public class Event extends Component {
 
 		dateStartParsed = parseDate(dateStart);
 		dateEndParsed = parseDate(dateEnd);
-		dateStartLine = DTSTART_PROPERTY + dateStartParsed + CRLF;
-		dateEndLine = DTEND_PROPERTY + dateEndParsed + CRLF;
-		props.append(dateStartLine);
-		props.append(dateEndLine);
+		dateStartLine = DTSTART_PROPERTY_TAG + dateStartParsed + CRLF;
+		dateEndLine = DTEND_PROPERTY_TAG + dateEndParsed + CRLF;
+
+		propList.add(new Dtstart(dateStartLine));
+		propList.add(new Dtend(dateEndLine));
 
 		return dateStartLine + dateEndLine;
 	}
@@ -119,11 +136,11 @@ public class Event extends Component {
 	@Override
 	public String addSummary(String summary) {
 		String returnStr;
-		String sumLine = SUMMARY_PROPERTY + summary + CRLF;
+		String sumLine = SUMMARY_PROPERTY_TAG + summary + CRLF;
 		if (summary.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			props.append(sumLine);
+			propList.add(new Summary(sumLine));
 			returnStr = sumLine;
 		}
 		return returnStr;
@@ -139,11 +156,11 @@ public class Event extends Component {
 	 */
 	public String addDescription(String description) {
 		String returnStr;
-		String descLine = DESCRIPTION_PROPERTY + description + CRLF;
+		String descLine = DESCRIPTION_PROPERTY_TAG + description + CRLF;
 		if (description.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			props.append(descLine);
+			propList.add(new Description(descLine));
 			returnStr = descLine;
 		}
 		return returnStr;
@@ -158,11 +175,11 @@ public class Event extends Component {
 	 */
 	public String addLocation(String location) {
 		String returnStr;
-		String locLine = LOCATION_PROPERTY + location + CRLF;
+		String locLine = LOCATION_PROPERTY_TAG + location + CRLF;
 		if (location.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			props.append(locLine);
+			propList.add(new Location(locLine));
 			returnStr = locLine;
 		}
 		return returnStr;
@@ -183,13 +200,13 @@ public class Event extends Component {
 		String geoLine = "";
 		if (geoPosition.compareTo("") != 0) {
 			geoPositionFormatted = parseGeographicPosition(geoPosition);
-			geoLine = GEOGRAPHIC_LOCATION_PROPERTY + geoPositionFormatted + CRLF;
+			geoLine = GEOGRAPHIC_LOCATION_PROPERTY_TAG + geoPositionFormatted + CRLF;
+			propList.add(new Geo(geoLine));
 		}
 
 		if (geoLine.compareTo("") == 0) {
 			returnStr = "";
 		} else {
-			props.append(geoLine);
 			returnStr = geoLine;
 		}
 		return returnStr;
@@ -234,8 +251,9 @@ public class Event extends Component {
 	/**
 	 * @see <a href="https://tools.ietf.org/html/rfc2445#section-4.8.1.3">https:
 	 *      //tools.ietf.org/html/rfc2445#section-4.8.1.3</a>
-	 * @param access 
-	 *            "PUBLIC" = 1 / "PRIVATE" = 2 / "CONFIDENTIAL" = 3 default is "PUBLIC"
+	 * @param access
+	 *            "PUBLIC" = 1 / "PRIVATE" = 2 / "CONFIDENTIAL" = 3 default is
+	 *            "PUBLIC"
 	 * @return the classification type added to the event
 	 */
 	public String setClassification(int access) {
@@ -243,17 +261,17 @@ public class Event extends Component {
 
 		switch (access) {
 		case 2:
-			String s1 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+			String s1 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
 			props.append(s1);
 			returnStr = s1;
 			break;
 		case 3:
-			String s2 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
+			String s2 = CLASSIFICATION_PROPERTY_TAG + "CONFIDENTIAL" + CRLF;
 			props.append(s2);
 			returnStr = s2;
 			break;
 		default:
-			String s3 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+			String s3 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
 			props.append(s3);
 			returnStr = s3;
 			break;
@@ -261,10 +279,50 @@ public class Event extends Component {
 		return returnStr;
 	}
 
+	public void addPropNoFormatRequired(String line) {
+		switch (line.substring(0, (line.indexOf(":") + 1))) {
+		
+		case CLASSIFICATION_PROPERTY_TAG:
+			propList.add(new Classification(line + CRLF));
+			break;
+		case DESCRIPTION_PROPERTY_TAG:
+			propList.add(new Description(line + CRLF));
+			break;
+		case DTSTART_PROPERTY_TAG:
+			propList.add(new Dtstart(line + CRLF));
+			break;
+		case DTEND_PROPERTY_TAG:
+			propList.add(new Dtend(line + CRLF));
+			break;
+		case LOCATION_PROPERTY_TAG:
+			propList.add(new Location(line + CRLF));
+			break;
+		case GEOGRAPHIC_LOCATION_PROPERTY_TAG:
+			propList.add(new Geo(line + CRLF));
+			break;
+		case SUMMARY_PROPERTY_TAG:
+			propList.add(new Summary(line + CRLF));
+			break;
+		default: 
+			System.err.println("Tag unsupported: " + line.substring(0, (line.indexOf(":"))));
+		break;
+		}
+	}
+
 	/**
 	 * appends event trailer tag to the event component and returns the string
 	 */
 	public String getContent() {
+		for (Property p : propList) {
+			props.append(p);
+		}
 		return props.append(EVENT_TRAILER + CRLF).toString();
+	}
+	
+	/**
+	 * @return the number of properties this event contain
+	 */
+	public int getPropertySize() {
+		return this.propList.size();
 	}
 }

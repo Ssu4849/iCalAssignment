@@ -177,7 +177,7 @@ public class TestCalendar {
 			File file = new File(sc.nextLine() + ".ics");
 
 			try {
-				readICSFile(file);
+				readEvents(file);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -206,15 +206,22 @@ public class TestCalendar {
 	 * @param calObj
 	 * @throws IOException
 	 */
-	public static void readICSFile(File file) throws IOException {
+	public static void readEvents(File file) throws IOException {
+		iCalObj calObj = new iCalObj(file);
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
 		String line = "";
 		while ((line = br.readLine()) != null) {
-			if (line.equalsIgnoreCase(Event.EVENT_HEADER)) {
-				System.out.println(line);
+			if (line.equals(Event.EVENT_HEADER)) {
+				Event event = new Event();
+				while ((line = br.readLine()) != null && !line.equals(Event.EVENT_TRAILER)) {
+					event.addPropNoFormatRequired(line);
+				}
+				calObj.addEvent(event);
 			}
 		}
+//		System.out.println(calObj);
+		fr.close();
 	}
 
 }

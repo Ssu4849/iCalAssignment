@@ -28,7 +28,7 @@ public class EventComponentTest {
 
 		String summary = "This is a test summary";
 
-		assertEquals(Event.SUMMARY_PROPERTY + summary + Event.CRLF, event.addSummary(summary));
+		assertEquals(Event.SUMMARY_PROPERTY_TAG + summary + Event.CRLF, event.addSummary(summary));
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class EventComponentTest {
 
 		String location = "Campus Center";
 
-		assertEquals(Event.LOCATION_PROPERTY + location + Event.CRLF, event.addLocation(location));
+		assertEquals(Event.LOCATION_PROPERTY_TAG + location + Event.CRLF, event.addLocation(location));
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class EventComponentTest {
 		String formattedDateTimeEnd = "20000101T000001";
 
 		try {
-			assertEquals(Event.DTSTART_PROPERTY + formattedDateTimeStart + Event.CRLF + Event.DTEND_PROPERTY
+			assertEquals(Event.DTSTART_PROPERTY_TAG + formattedDateTimeStart + Event.CRLF + Event.DTEND_PROPERTY_TAG
 					+ formattedDateTimeEnd + Event.CRLF, event.addTimeDateSpan(dateTimeStart, dateTimeEnd));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

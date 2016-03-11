@@ -91,6 +91,14 @@ public class iCalObj {
 		getComponentList().add(event);
 		return event;
 	}
+	
+	/**
+	 * Adds an event to the calendar
+	 * @param e the event to add
+	 */
+	public void addEvent(Event e) {
+		componentList.add(e);
+	}
 
 	/**
 	 * @return the componentList
@@ -116,5 +124,12 @@ public class iCalObj {
 	 */
 	public File getFile() {
 		return this.file;
+	}
+	
+	/**
+	 * @return the number of component this calendar has
+	 */
+	public int getComponentSize() {
+		return this.componentList.size();
 	}
 }

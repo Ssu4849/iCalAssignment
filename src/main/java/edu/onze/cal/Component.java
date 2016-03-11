@@ -9,5 +9,7 @@ public abstract class Component {
 	public abstract String addTimeDateSpan(String dateStart, String dateEnd) throws ParseException;
 
 	public abstract String addSummary(String summary);
+	
+	public abstract int getPropertySize();
 
 }
