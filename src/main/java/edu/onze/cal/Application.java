@@ -3,6 +3,7 @@ package edu.onze.cal;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JComboBox;
 
 public class Application {
 
@@ -38,6 +39,10 @@ public class Application {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(28, 28, 28, 20);
+		frame.getContentPane().add(comboBox);
 	}
-
 }

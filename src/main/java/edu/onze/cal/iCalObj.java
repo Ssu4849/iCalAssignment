@@ -46,7 +46,7 @@ public class iCalObj {
 	public List<Component> componentList = new ArrayList<Component>();
 
 	/**
-	 * Instantiates an iCalendar object with no components
+	 * Constructor for an iCalendar object with no components
 	 */
 	public iCalObj(File file) {
 		this.file = file;

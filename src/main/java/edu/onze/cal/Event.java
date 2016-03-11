@@ -21,8 +21,8 @@ public class Event extends Component {
 	/**
 	 * These fields are required
 	 */
-	public static final String EVENT_HEADER = "BEGIN:VEVENT" + CRLF;
-	public static final String EVENT_TRAILER = "END:VEVENT" + CRLF;
+	public static final String EVENT_HEADER = "BEGIN:VEVENT";
+	public static final String EVENT_TRAILER = "END:VEVENT";
 
 	/**
 	 * These parameters are optional
@@ -62,7 +62,7 @@ public class Event extends Component {
 	 */
 	public Event() {
 		props = new StringBuilder();
-		props.append(EVENT_HEADER);
+		props.append(EVENT_HEADER + CRLF);
 	}
 
 	/**
@@ -234,8 +234,8 @@ public class Event extends Component {
 	/**
 	 * @see <a href="https://tools.ietf.org/html/rfc2445#section-4.8.1.3">https:
 	 *      //tools.ietf.org/html/rfc2445#section-4.8.1.3</a>
-	 * @param access
-	 *            "PUBLIC" / "PRIVATE" / "CONFIDENTIAL" default is "PUBLIC"
+	 * @param access 
+	 *            "PUBLIC" = 1 / "PRIVATE" = 2 / "CONFIDENTIAL" = 3 default is "PUBLIC"
 	 * @return the classification type added to the event
 	 */
 	public String setClassification(int access) {
@@ -265,6 +265,6 @@ public class Event extends Component {
 	 * appends event trailer tag to the event component and returns the string
 	 */
 	public String getContent() {
-		return props.append(EVENT_TRAILER).toString();
+		return props.append(EVENT_TRAILER + CRLF).toString();
 	}
 }
