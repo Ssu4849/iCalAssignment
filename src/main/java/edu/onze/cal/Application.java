@@ -35,6 +35,7 @@ public class Application {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("rawtypes")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);

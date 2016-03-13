@@ -10,6 +10,6 @@ public abstract class Component {
 
 	public abstract String addSummary(String summary);
 	
-	public abstract int getPropertySize();
+	public abstract int getPropertySize(); 
 
 }

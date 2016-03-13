@@ -1,10 +1,8 @@
 package edu.onze.cal.props;
 
-public class Location extends Property {
+public class Location extends Property implements UniqueProperty {
 	
 	private String content;
-	
-	private final boolean allowDuplicates = false;
 	
 	public Location(String c) {
 		this.content = c;
@@ -14,25 +12,17 @@ public class Location extends Property {
 		return this.content;
 	}
 	
-	public boolean isUnique() {
-		return allowDuplicates;
-	}
-	
-	public String getTag() {
-		String tag = "";
-		if (content.length() == 0) {
-			tag = "";
-		}
-		else {
-			tag = content.substring(0, content.indexOf(":") + 1);
-		}
-		return tag;
+	public String getContent() {
+		if (content != null) {
+				return content.substring(content.indexOf(":") + 1, content.length());
+		}	
+		return "";
 	}
 	
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Property) {
-			if (this.getTag().equals(((Property) o).getTag())) {
+			if (this.toString().equals(((Property) o).toString())) {
 				return true;
 			}
 		}

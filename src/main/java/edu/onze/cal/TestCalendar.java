@@ -173,7 +173,7 @@ public class TestCalendar {
 				e.printStackTrace();
 			}
 		} else if (Integer.parseInt(args[0]) == 2) {
-			System.out.println("Enter the name of the ICS file you want to read (without extensin)");
+			System.out.println("Enter the name of the ICS file you want to read (without extension)");
 			File file = new File(sc.nextLine() + ".ics");
 
 			try {
@@ -223,11 +223,10 @@ public class TestCalendar {
 						System.err.println("skipping line...");
 					}
 				}
-				calObj.addEvent(event);
+					calObj.addEvent(event);
 			}
 		}
 		System.out.println(calObj);
 		fr.close();
 	}
-
 }

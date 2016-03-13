@@ -9,7 +9,6 @@ package edu.onze.cal.props;
  */
 public abstract class Property {
 	
-	public abstract boolean isUnique();
+	public abstract String getContent();
 	
-	public abstract String getTag();
 }

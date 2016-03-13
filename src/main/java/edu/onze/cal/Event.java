@@ -14,6 +14,7 @@ import edu.onze.cal.props.Dtend;
 import edu.onze.cal.props.Dtstart;
 import edu.onze.cal.props.Geo;
 import edu.onze.cal.props.Location;
+import edu.onze.cal.props.UniqueProperty;
 import edu.onze.cal.props.Property;
 import edu.onze.cal.props.Summary;
 
@@ -340,7 +341,7 @@ public class Event extends Component {
 	 * Adds a property to the property list
 	 */
 	private void addProperty(Property property) {
-		if (property.isUnique()) {
+		if (property instanceof UniqueProperty) {
 			if (this.propList.contains(property)) {
 				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
 			} else {
