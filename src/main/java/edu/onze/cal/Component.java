@@ -5,6 +5,9 @@ import java.util.Date;
 
 import edu.onze.cal.props.Geo;
 
+/**
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
+ */
 public abstract class Component {
 
 	public abstract String getContent();

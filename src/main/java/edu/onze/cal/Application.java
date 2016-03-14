@@ -5,6 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
 
+/**
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
+ */
 public class Application {
 
 	private JFrame frame;

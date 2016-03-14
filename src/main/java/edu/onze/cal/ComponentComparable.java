@@ -2,6 +2,9 @@ package edu.onze.cal;
 
 import java.util.Comparator;
 
+/**
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
+ */
 public class ComponentComparable implements Comparator<Component>{
 
 	@Override

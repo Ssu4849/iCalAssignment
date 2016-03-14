@@ -8,8 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 
- * @author Team Onze
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
  */
 public class iCalObj {
 
