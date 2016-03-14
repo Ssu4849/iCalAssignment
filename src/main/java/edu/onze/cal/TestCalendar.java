@@ -5,8 +5,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -181,8 +186,40 @@ public class TestCalendar {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else if (Integer.parseInt(args[0]) == 3) {
+			System.out.println("Reading all .ics files in directory");
+			List<Component> eventList = new ArrayList<Component>();
+			Map<Component, iCalObj> eventCalendarMap = new HashMap<Component, iCalObj>();
+
+			File[] fileList = new File("./").listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File directory, String filename) {
+					return filename.endsWith(".ics");
+				}
+			});
+
+			try {
+				for (File file : fileList) {
+					iCalObj calendar;
+					calendar = readEvents(file);
+					for (Component c : calendar.getComponentList()) {
+						eventCalendarMap.put(c, calendar);
+					}
+					for (Component c : calendar.getComponentList()) {
+						eventList.add(c);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			eventList.sort(new ComponentComparable());
+			for (Component event : eventList) {
+				System.out.println(event.getStartDate().toString());
+			}
 		} else {
-			System.err.println("Usage: Enter 1 to write, 2 to read");
+			System.err.println(
+					"Usage: Enter 1 to write, 2 to read a single file, 3 to read all files and calculate great circle distance");
 			System.exit(0);
 		}
 	}
@@ -206,7 +243,7 @@ public class TestCalendar {
 	 * @param calObj
 	 * @throws IOException
 	 */
-	public static void readEvents(File file) throws IOException {
+	public static iCalObj readEvents(File file) throws IOException {
 		iCalObj calObj = new iCalObj(file);
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
@@ -216,17 +253,22 @@ public class TestCalendar {
 				Event event = new Event();
 				while ((line = br.readLine()) != null && !line.equals(Event.EVENT_TRAILER)) {
 					try {
-						System.out.println(line);
 						event.addPropNoFormatRequired(line);
 					} catch (IllegalArgumentException e) {
 						System.err.println(e.getMessage());
 						System.err.println("skipping line...");
 					}
 				}
-					calObj.addEvent(event);
+				calObj.addEvent(event);
 			}
 		}
-		System.out.println(calObj);
+		System.out
+				.println("Calendar " + calObj.getFile().getName() + " has " + calObj.getComponentSize() + " event(s).");
 		fr.close();
+		return calObj;
+	}
+
+	public static double getGreatCircleDistance(double geo1, double geo2) {
+		return 0.0;
 	}
 }

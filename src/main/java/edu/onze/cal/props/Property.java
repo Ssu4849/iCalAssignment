@@ -8,7 +8,7 @@ package edu.onze.cal.props;
  *
  */
 public abstract class Property {
-	
+
 	public abstract String getContent();
-	
+
 }

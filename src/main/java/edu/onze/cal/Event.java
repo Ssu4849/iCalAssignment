@@ -68,6 +68,11 @@ public class Event extends Component {
 	 * Date format provided by the user
 	 */
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	
+	/**
+	 * DateTime the event starts
+	 */
+	private Date dateTimeStart;
 
 	/**
 	 * Instantiates an empty Event component
@@ -106,6 +111,10 @@ public class Event extends Component {
 		addProperty(new Dtstart(dateStartLine));
 		addProperty(new Dtend(dateEndLine));
 
+		// sets the start date of this event
+		SimpleDateFormat ISOFORMAT = new SimpleDateFormat(DATE_FORMAT);
+		this.dateTimeStart = ISOFORMAT.parse(dateStart);
+		
 		return dateStartLine + dateEndLine;
 	}
 
@@ -119,14 +128,11 @@ public class Event extends Component {
 	 *             if input date is not in the correct format
 	 */
 	private String parseDate(String date) throws ParseException {
-		String returnStr = "";
 		DateFormat originalFormat = new SimpleDateFormat(DATE_FORMAT);
 		DateFormat targetFormat = new SimpleDateFormat(ISO_8601_FORMAT);
 		Date originalDate = null;
-
 		originalDate = originalFormat.parse(date);
-		returnStr = targetFormat.format(originalDate);
-		return returnStr;
+		return targetFormat.format(originalDate);
 	}
 
 	private boolean endDateGtrStartDate(String dateStart, String dateEnd) {
@@ -135,15 +141,14 @@ public class Event extends Component {
 
 	@Override
 	public String addSummary(String summary) {
-		String returnStr;
-		String sumLine = SUMMARY_PROPERTY_TAG + summary + CRLF;
-		if (summary.compareTo("") == 0) {
-			returnStr = "";
+		String sumLine = "";
+		if (summary.trim().compareTo("") == 0) {
+			sumLine = SUMMARY_PROPERTY_TAG + "(No Title)" + CRLF;
 		} else {
-			addProperty(new Summary(sumLine));
-			returnStr = sumLine;
+			sumLine = SUMMARY_PROPERTY_TAG + summary + CRLF;
 		}
-		return returnStr;
+		addProperty(new Summary(sumLine));
+		return sumLine;
 
 	}
 
@@ -155,15 +160,14 @@ public class Event extends Component {
 	 * @return the line to add to the ics file under event component
 	 */
 	public String addDescription(String description) {
-		String returnStr;
-		String descLine = DESCRIPTION_PROPERTY_TAG + description + CRLF;
-		if (description.compareTo("") == 0) {
-			returnStr = "";
+		String descLine = "";
+		if (description.trim().compareTo("") == 0) {
+			descLine = "";
 		} else {
+			descLine = DESCRIPTION_PROPERTY_TAG + description + CRLF;
 			addProperty(new Description(descLine));
-			returnStr = descLine;
 		}
-		return returnStr;
+		return descLine;
 	}
 
 	/**
@@ -174,15 +178,14 @@ public class Event extends Component {
 	 * @return the line to add to the ics file under event component
 	 */
 	public String addLocation(String location) {
-		String returnStr;
-		String locLine = LOCATION_PROPERTY_TAG + location + CRLF;
-		if (location.compareTo("") == 0) {
-			returnStr = "";
+		String locLine = "";
+		if (location.trim().compareTo("") == 0) {
+			locLine = "";
 		} else {
+			locLine = LOCATION_PROPERTY_TAG + location + CRLF;
 			addProperty(new Location(locLine));
-			returnStr = locLine;
 		}
-		return returnStr;
+		return locLine;
 	}
 
 	/**
@@ -203,7 +206,6 @@ public class Event extends Component {
 			geoLine = GEOGRAPHIC_LOCATION_PROPERTY_TAG + geoPositionFormatted + CRLF;
 			addProperty(new Geo(geoLine));
 		}
-
 		if (geoLine.compareTo("") == 0) {
 			returnStr = "";
 		} else {
@@ -263,17 +265,17 @@ public class Event extends Component {
 		switch (access) {
 		case 2:
 			String s1 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
-			props.append(s1);
+			addProperty(new Classification(s1));
 			returnStr = s1;
 			break;
 		case 3:
 			String s2 = CLASSIFICATION_PROPERTY_TAG + "CONFIDENTIAL" + CRLF;
-			props.append(s2);
+			addProperty(new Classification(s2));
 			returnStr = s2;
 			break;
 		default:
 			String s3 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
-			props.append(s3);
+			addProperty(new Classification(s3));
 			returnStr = s3;
 			break;
 		}
@@ -300,7 +302,14 @@ public class Event extends Component {
 			addProperty(new Description(line + CRLF));
 			break;
 		case DTSTART_PROPERTY_TAG:
-			addProperty(new Dtstart(line + CRLF));
+			// sets the start date of this event
+			SimpleDateFormat ISOFORMAT = new SimpleDateFormat(ISO_8601_FORMAT);
+			try {
+				this.dateTimeStart = ISOFORMAT.parse(line.substring((line.indexOf(":") + 1), line.length()));
+				addProperty(new Dtstart(line + CRLF));
+			} catch (ParseException e) {
+				System.err.println("Error parsing date: " + line.substring((line.indexOf(":") + 1), line.length()));
+			}
 			break;
 		case DTEND_PROPERTY_TAG:
 			addProperty(new Dtend(line + CRLF));
@@ -321,6 +330,21 @@ public class Event extends Component {
 	}
 
 	/**
+	 * Adds a property to the property list
+	 */
+	private void addProperty(Property property) {
+		if (property instanceof UniqueProperty) {
+			if (this.propList.contains(property)) {
+				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
+			} else {
+				this.propList.add(property);
+			}
+		} else {
+			this.propList.add(property);
+		}
+	}
+
+	/**
 	 * appends event trailer tag to the event component and returns the string
 	 */
 	public String getContent() {
@@ -336,19 +360,11 @@ public class Event extends Component {
 	public int getPropertySize() {
 		return this.propList.size();
 	}
-
+	
 	/**
-	 * Adds a property to the property list
+	 * @return the date of this event
 	 */
-	private void addProperty(Property property) {
-		if (property instanceof UniqueProperty) {
-			if (this.propList.contains(property)) {
-				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
-			} else {
-				this.propList.add(property);
-			}
-		} else {
-			this.propList.add(property);
-		}
+	public Date getStartDate() {
+		return this.dateTimeStart;
 	}
 }

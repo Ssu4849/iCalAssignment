@@ -212,9 +212,15 @@ public class EventComponentTest {
 	}
 	
 	@Test
-	public void testSizeOfPropertyList() {
+	public void test_Size_Of_PropertyList_One_Property() {
 		Event event = new Event();
 		event.addDescription("Test Description");
 		assertEquals(event.getPropertySize(), 1);
+	}
+	
+	@Test
+	public void test_Size_Of_PropertyList_No_Property() {
+		Event event = new Event();
+		assertEquals(event.getPropertySize(), 0);
 	}
 }
