@@ -139,4 +139,8 @@ public class iCalObj {
 	public List<Component> getEvent(Date date) {
 		return null;
 	}
+	
+	public void setFileName(File filename) {
+		this.file.renameTo(filename);
+	}
 }

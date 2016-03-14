@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.onze.cal.props.Classification;
+import edu.onze.cal.props.Comment;
 import edu.onze.cal.props.Description;
 import edu.onze.cal.props.Dtend;
 import edu.onze.cal.props.Dtstart;
@@ -35,17 +36,18 @@ public class Event extends Component {
 	 */
 	public static final String EVENT_HEADER = "BEGIN:VEVENT";
 	public static final String EVENT_TRAILER = "END:VEVENT";
+	public static final String DTSTART_PROPERTY_TAG = "DTSTART:";
+	public static final String DTEND_PROPERTY_TAG = "DTEND:";
 
 	/**
 	 * These parameters are optional
 	 */
 	public static final String DESCRIPTION_PROPERTY_TAG = "DESCRIPTION:";
-	public static final String DTSTART_PROPERTY_TAG = "DTSTART:";
-	public static final String DTEND_PROPERTY_TAG = "DTEND:";
 	public static final String SUMMARY_PROPERTY_TAG = "SUMMARY:";
 	public static final String LOCATION_PROPERTY_TAG = "LOCATION:";
 	public static final String GEOGRAPHIC_LOCATION_PROPERTY_TAG = "GEO:";
 	public static final String CLASSIFICATION_PROPERTY_TAG = "CLASS:";
+	public static final String COMMENT_PROPERTY_TAG = "COMMENT:";
 
 	/**
 	 * Stores the strings of classification types
@@ -68,7 +70,7 @@ public class Event extends Component {
 	 * Date format provided by the user
 	 */
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	
+
 	/**
 	 * DateTime the event starts
 	 */
@@ -114,7 +116,7 @@ public class Event extends Component {
 		// sets the start date of this event
 		SimpleDateFormat ISOFORMAT = new SimpleDateFormat(DATE_FORMAT);
 		this.dateTimeStart = ISOFORMAT.parse(dateStart);
-		
+
 		return dateStartLine + dateEndLine;
 	}
 
@@ -212,6 +214,25 @@ public class Event extends Component {
 			returnStr = geoLine;
 		}
 		return returnStr;
+	}
+
+	/**
+	 * @see <a href="https://tools.ietf.org/html/rfc5545#section-3.8.1.4">https:
+	 *      //tools.ietf.org/html/rfc5545#section-3.8.1.4</a>
+	 * @param access
+	 *            "PUBLIC" = 1 / "PRIVATE" = 2 / "CONFIDENTIAL" = 3 default is
+	 *            "PUBLIC"
+	 * @return the classification type added to the event
+	 */
+	public String addComment(String comment) {
+		String commentLine = "";
+		if (comment.trim().compareTo("") == 0) {
+			commentLine = "";
+		} else {
+			commentLine = COMMENT_PROPERTY_TAG + comment + CRLF;
+			addProperty(new Comment(commentLine));
+		}
+		return commentLine;
 	}
 
 	/**
@@ -323,6 +344,9 @@ public class Event extends Component {
 		case SUMMARY_PROPERTY_TAG:
 			addProperty(new Summary(line + CRLF));
 			break;
+		case COMMENT_PROPERTY_TAG:
+			addProperty(new Comment(line + CRLF));
+			break;
 		default:
 			System.err.println("Property unsupported: " + line.substring(0, (line.indexOf(":"))));
 			break;
@@ -360,11 +384,23 @@ public class Event extends Component {
 	public int getPropertySize() {
 		return this.propList.size();
 	}
-	
+
 	/**
 	 * @return the date of this event
 	 */
 	public Date getStartDate() {
 		return this.dateTimeStart;
+	}
+	
+	/**
+	 * Returns the instance of geographic position associated with this event
+	 */
+	public Geo getGeographicPosition() {
+		for (Property p : this.propList) {
+			if (p instanceof Geo) {
+				return (Geo) p;
+			}
+		}
+		return null;
 	}
 }

@@ -7,12 +7,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
+
+import edu.onze.cal.props.Geo;
 
 /**
  * @author Team Onze
@@ -25,6 +29,7 @@ public class TestCalendar {
 	/**
 	 * @param args
 	 */
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		sc = new Scanner(System.in);
 
@@ -37,7 +42,7 @@ public class TestCalendar {
 
 			System.out.println("Enter the file name for your ics file");
 			String fileName = sc.nextLine();
-			File file = new File(fileName);
+			File file = new File(fileName + ".ics");
 
 			iCalObj calendar = new iCalObj(file);
 
@@ -47,6 +52,7 @@ public class TestCalendar {
 			if (dateTimeStart.split(":").length != 3 || dateTimeStart.split("-").length != 3) {
 				System.err.println("Date/Time start is not the correct format");
 				System.exit(0);
+
 			}
 
 			// Parses user input for anything != int
@@ -115,11 +121,13 @@ public class TestCalendar {
 			String classification = sc.nextLine();
 			int classificationChoice = 1;
 			// Validates if user input is a number
-			try {
-				classificationChoice = Integer.parseInt(classification);
-			} catch (NumberFormatException e) {
-				System.err.println("Not a number");
-				System.exit(0);
+			if (classification.trim().length() != 0) {
+				try {
+					classificationChoice = Integer.parseInt(classification);
+				} catch (NumberFormatException e) {
+					System.err.println("Not a number");
+					System.exit(0);
+				}
 			}
 
 			// Validates if user input is within range [1,3]
@@ -130,37 +138,42 @@ public class TestCalendar {
 			}
 
 			// validates geographic position format
-			String[] latLongArray = geoPosition.split(" ");
-			if (latLongArray.length != 2) {
-				System.err.println("Geographic position is not the correct format");
-				System.exit(0);
-			}
-			if (latLongArray[0].split(",").length != 3) {
-				System.err.println("Latitude is not the correct format");
-				System.exit(0);
-			}
-			if (latLongArray[1].split(",").length != 3) {
-				System.err.println("Longitude is not the correct format");
-				System.exit(0);
-			}
-
-			// Parses User input for anything != a decimal
-			try {
-				for (String latLong : geoPosition.split(" ")) {
-					for (String coordinate : latLong.split(",")) {
-						Double.parseDouble(coordinate);
-					}
+			if (geoPosition.trim().length() != 0) {
+				String[] latLongArray = geoPosition.split(" ");
+				if (latLongArray.length != 2) {
+					System.err.println("Geographic position is not the correct format");
+					System.exit(0);
 				}
-			} catch (NumberFormatException e) {
-				System.err.println("Geographic position not a decimal");
-				System.exit(0);
-			}
+				if (latLongArray[0].split(",").length != 3) {
+					System.err.println("Latitude is not the correct format");
+					System.exit(0);
+				}
+				if (latLongArray[1].split(",").length != 3) {
+					System.err.println("Longitude is not the correct format");
+					System.exit(0);
+				}
 
+				// Parses User input for anything != a decimal
+				try {
+					for (String latLong : geoPosition.split(" ")) {
+						for (String coordinate : latLong.split(",")) {
+							Double.parseDouble(coordinate);
+						}
+					}
+				} catch (NumberFormatException e) {
+					System.err.println("Geographic position not a decimal");
+					System.exit(0);
+				}
+			}
 			// Checks that event date/time is the correct format
 			try {
 				Event event1 = calendar.createEvent(dateTimeStart, dateTimeEnd, summary, description, location);
-				event1.addGeoPosition(geoPosition);
-				event1.setClassification(classificationChoice);
+				if (geoPosition.trim().length() != 0) {
+					event1.addGeoPosition(geoPosition);
+				}
+				if (classification.trim().length() != 0) {
+					event1.setClassification(classificationChoice);
+				}
 			} catch (IllegalArgumentException e) {
 				System.err.println(e.getMessage());
 				System.exit(0);
@@ -180,16 +193,26 @@ public class TestCalendar {
 		} else if (Integer.parseInt(args[0]) == 2) {
 			System.out.println("Enter the name of the ICS file you want to read (without extension)");
 			File file = new File(sc.nextLine() + ".ics");
-
 			try {
 				readEvents(file);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else if (Integer.parseInt(args[0]) == 3) {
-			System.out.println("Reading all .ics files in directory");
+			System.out.println("Reading all .ics files in directory...");
+
+			System.out.println("Enter a date you want to read (Format YYYY-MM-DD)");
+			String dateString = sc.nextLine();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date dateSelected = null;
+			try {
+				dateSelected = dateFormat.parse(dateString);
+			} catch (ParseException e) {
+
+			}
+
 			List<Component> eventList = new ArrayList<Component>();
-			Map<Component, iCalObj> eventCalendarMap = new HashMap<Component, iCalObj>();
+			List<iCalObj> calendarList = new ArrayList<iCalObj>();
 
 			File[] fileList = new File("./").listFiles(new FilenameFilter() {
 				@Override
@@ -202,20 +225,51 @@ public class TestCalendar {
 				for (File file : fileList) {
 					iCalObj calendar;
 					calendar = readEvents(file);
-					for (Component c : calendar.getComponentList()) {
-						eventCalendarMap.put(c, calendar);
-					}
-					for (Component c : calendar.getComponentList()) {
-						eventList.add(c);
-					}
+					eventList.addAll(calendar.getComponentList());
+					calendarList.add(calendar);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
+			// Will sort the events by start date
 			eventList.sort(new ComponentComparable());
-			for (Component event : eventList) {
-				System.out.println(event.getStartDate().toString());
+
+			// removes all events in the eventList not same day as the chosen
+			// date
+			Iterator<Component> it = eventList.iterator();
+			while (it.hasNext()) {
+				Component c = it.next();
+				if (c.getStartDate().getYear() != dateSelected.getYear()
+						|| c.getStartDate().getMonth() != dateSelected.getMonth()
+						|| c.getStartDate().getDate() != dateSelected.getDate()) {
+					it.remove();
+				}
+			}
+
+			for (int i = 0; i < (eventList.size() - 1); i++) {
+				Geo geo1 = eventList.get(i).getGeographicPosition();
+				Double latGeo1 = Double.parseDouble(geo1.getContent().split(";")[0]);
+				Double longGeo1 = Double.parseDouble(geo1.getContent().split(";")[1]);
+				Geo geo2 = eventList.get(i + 1).getGeographicPosition();
+				Double latGeo2 = Double.parseDouble(geo2.getContent().split(";")[0]);
+				Double longGeo2 = Double.parseDouble(geo2.getContent().split(";")[1]);
+
+				Double distanceKm = new BigDecimal(getGreatCircleDistance(latGeo1, latGeo2, longGeo1, longGeo2))
+						.setScale(3, BigDecimal.ROUND_FLOOR).doubleValue();
+				Double distanceMi = new BigDecimal(distanceKm * 0.62137).setScale(3, BigDecimal.ROUND_FLOOR)
+						.doubleValue();
+
+				eventList.get(i).addComment(
+						"The distance to the next event is " + distanceKm + " km or " + distanceMi + " miles.");
+			}
+
+			try {
+				for (iCalObj calendar : calendarList) {
+					printICSFile(calendar);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		} else {
 			System.err.println(
@@ -233,14 +287,17 @@ public class TestCalendar {
 	 *             if an input/output error occurs
 	 */
 	public static void printICSFile(iCalObj calObj) throws IOException {
-		FileWriter fw = new FileWriter(calObj.getFile() + ".ics");
+		FileWriter fw = new FileWriter(calObj.getFile());
 		fw.write(calObj.toString());
 		fw.close();
 	}
 
 	/**
+	 * Read all events into an icalendar object
 	 * 
-	 * @param calObj
+	 * @param file
+	 *            the file with icalendar
+	 * @iCalObj the calendar object generated from the file
 	 * @throws IOException
 	 */
 	public static iCalObj readEvents(File file) throws IOException {
@@ -262,13 +319,33 @@ public class TestCalendar {
 				calObj.addEvent(event);
 			}
 		}
-		System.out
-				.println("Calendar " + calObj.getFile().getName() + " has " + calObj.getComponentSize() + " event(s).");
 		fr.close();
 		return calObj;
 	}
 
-	public static double getGreatCircleDistance(double geo1, double geo2) {
-		return 0.0;
+	/**
+	 * Calculates the great circle distance using mean radius value from
+	 * <a href="http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html">
+	 * http://nssdc.gsfc.nasa .gov/planetary/factsheet/earthfact.html</a>
+	 * 
+	 * @param latitude1
+	 * @param latitude2
+	 * @param longitude1
+	 * @param longitude2
+	 * @return
+	 */
+	public static double getGreatCircleDistance(double latitude1, double latitude2, double longitude1,
+			double longitude2) {
+		final double EARTH_MEAN_RADIUS = 6371.0;
+
+		double diffLongitude = Math.abs(latitude2 - latitude1);
+
+		// double diffLatitude = Math.abs(longitude2 - longitude1);
+
+		double deltaCentralAngle = Math.acos(Math.sin(Math.toRadians(latitude1)) * Math.sin(Math.toRadians(latitude2))
+				+ Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
+						* Math.cos(Math.toRadians(diffLongitude)));
+
+		return EARTH_MEAN_RADIUS * deltaCentralAngle;
 	}
 }
