@@ -75,8 +75,11 @@ public class TestCalendar {
 	}
 
 	/**
-	 * Read all events into an icalendar object
-	 * 
+	 * Read all events into an icalendar object. 
+	 * If the file does not have proper event header(s) such as BEGIN:VEVENT,
+	 * no events will be read.
+	 * If the ics file does not have proper formatting, eg. does not have END:VEVENT,
+	 * it will read until the first unsupported property, and terminate at that point
 	 * @param file
 	 *            the file with icalendar
 	 * @iCalObj the calendar object generated from the file
@@ -86,13 +89,16 @@ public class TestCalendar {
 		iCalObj calObj = new iCalObj(file);
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
-		String line = "";
+		String line;
 		while ((line = br.readLine()) != null) {
 			if (line.equals(Event.EVENT_HEADER)) {
 				Event event = new Event();
 				while ((line = br.readLine()) != null && !line.equals(Event.EVENT_TRAILER)) {
 					try {
-						event.addPropNoFormatRequired(line);
+						// Terminates reading if property is not supported
+						if (!event.addPropNoFormatRequired(line)) {
+							System.exit(0);
+						}
 					} catch (IllegalArgumentException e) {
 						System.err.println(e.getMessage());
 						System.err.println("skipping line...");
@@ -106,7 +112,7 @@ public class TestCalendar {
 	}
 
 	/**
-	 * Calculates the great circle distance using mean radius value from
+	 * Calculates the great circle distance using Earth mean radius value from
 	 * <a href="http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html">
 	 * http://nssdc.gsfc.nasa .gov/planetary/factsheet/earthfact.html</a>
 	 * 
@@ -250,6 +256,10 @@ public class TestCalendar {
 	}
 
 	@SuppressWarnings("deprecation")
+	/**
+	 * Will read all .ics files of given date and calculate great circle
+	 * distance for each event except the last event. 
+	 */
 	public static void readCalculateCircleDistance() {
 		System.out.println("Reading all .ics files in directory...");
 
@@ -324,7 +334,7 @@ public class TestCalendar {
 		}
 	}
 
-	public static boolean validateDatetime(String dateTime) {
+	private static boolean validateDatetime(String dateTime) {
 		boolean incorrectFormat = false;
 		// Checks timeStart for correct format
 		if (dateTime.split(":").length != 3 || dateTime.split("-").length != 3) {
