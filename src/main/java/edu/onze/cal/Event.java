@@ -90,6 +90,8 @@ public class Event extends Component {
 	private List<Property> propList = new ArrayList<Property>();
 
 	/**
+	 * Adds the start and end time of the event.
+	 * Only accepts one date format for now: yyyy-MM-dd HH:mm:ss
 	 * @throws IllegalArgumentException
 	 *             if dateEnd > dateStart
 	 * @throws Parse
@@ -137,6 +139,13 @@ public class Event extends Component {
 		return targetFormat.format(originalDate);
 	}
 
+	/**
+	 * Compares end date with starting date. Assumes that the date format 
+	 * is YYYY-MM-DD HH:MM:SS. 
+	 * @param dateStart
+	 * @param dateEnd
+	 * @return
+	 */
 	private boolean endDateGtrStartDate(String dateStart, String dateEnd) {
 		return dateStart.compareTo(dateEnd) > 0;
 	}
@@ -304,8 +313,8 @@ public class Event extends Component {
 	}
 
 	/**
-	 * Adds a property to the event without formatting. Use this when a line
-	 * when reading from ics file
+	 * Adds a property to the event without formatting.
+	 * Use this when reading from ics file
 	 * 
 	 * @param line
 	 *            the current line that is a property

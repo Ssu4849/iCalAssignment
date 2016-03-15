@@ -4,7 +4,6 @@ package edu.onze.cal;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -128,15 +127,6 @@ public class iCalObj {
 	 */
 	public int getComponentSize() {
 		return this.componentList.size();
-	}
-	
-	/**
-	 * Gets all events of a certain date
-	 * @param date
-	 * @return
-	 */
-	public List<Component> getEvent(Date date) {
-		return null;
 	}
 	
 	public void setFileName(File filename) {
