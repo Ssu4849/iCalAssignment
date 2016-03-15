@@ -90,8 +90,9 @@ public class Event extends Component {
 	private List<Property> propList = new ArrayList<Property>();
 
 	/**
-	 * Adds the start and end time of the event.
-	 * Only accepts one date format for now: yyyy-MM-dd HH:mm:ss
+	 * Adds the start and end time of the event. Only accepts one date format
+	 * for now: yyyy-MM-dd HH:mm:ss
+	 * 
 	 * @throws IllegalArgumentException
 	 *             if dateEnd > dateStart
 	 * @throws Parse
@@ -140,8 +141,9 @@ public class Event extends Component {
 	}
 
 	/**
-	 * Compares end date with starting date. Assumes that the date format 
-	 * is YYYY-MM-DD HH:MM:SS. 
+	 * Compares end date with starting date. Assumes that the date format is
+	 * YYYY-MM-DD HH:MM:SS.
+	 * 
 	 * @param dateStart
 	 * @param dateEnd
 	 * @return
@@ -313,8 +315,8 @@ public class Event extends Component {
 	}
 
 	/**
-	 * Adds a property to the event without formatting.
-	 * Use this when reading from ics file
+	 * Adds a property to the event without formatting. Use this when reading
+	 * from ics file
 	 * 
 	 * @param line
 	 *            the current line that is a property
@@ -369,15 +371,11 @@ public class Event extends Component {
 	 * Adds a property to the property list
 	 */
 	private void addProperty(Property property) {
-		if (property instanceof UniqueProperty) {
-			if (this.propList.contains(property)) {
+		if (property instanceof UniqueProperty 
+			&& this.propList.contains(property)) {
 				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
-			} else {
-				this.propList.add(property);
-			}
-		} else {
-			this.propList.add(property);
 		}
+		this.propList.add(property);
 	}
 
 	/**
@@ -403,7 +401,7 @@ public class Event extends Component {
 	public Date getStartDate() {
 		return this.dateTimeStart;
 	}
-	
+
 	/**
 	 * Returns the instance of geographic position associated with this event
 	 */
