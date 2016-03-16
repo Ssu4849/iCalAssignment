@@ -270,17 +270,29 @@ public class Event extends Component {
 			throw new IllegalStateException("Longitude range should be [-180,180]");
 		}
 
-		// Formula Degree(decimal) = Degree + Minute/60 + Seconds/3600
-		Double degreeLat = Double.parseDouble(latDegMinSec[0]) + Double.parseDouble(latDegMinSec[1]) / 60
-				+ Double.parseDouble(latDegMinSec[2]) / 3600;
-		Double degreeLon = Double.parseDouble(lonDegMinSec[0]) + Double.parseDouble(lonDegMinSec[1]) / 60
-				+ Double.parseDouble(lonDegMinSec[2]) / 3600;
+		Double degreeLat = convertToDegrees(Double.parseDouble(latDegMinSec[0]), Double.parseDouble(latDegMinSec[1]),
+				Double.parseDouble(latDegMinSec[2]));
+		Double degreeLon = convertToDegrees(Double.parseDouble(lonDegMinSec[0]), Double.parseDouble(lonDegMinSec[1]),
+				Double.parseDouble(lonDegMinSec[2]));
 
 		String truncDegLat = new BigDecimal(degreeLat).setScale(6, BigDecimal.ROUND_FLOOR).toString();
 		String truncDegLon = new BigDecimal(degreeLon).setScale(6, BigDecimal.ROUND_FLOOR).toString();
 
 		returnStr = truncDegLat + ";" + truncDegLon;
 		return returnStr;
+	}
+
+	/**
+	 * @param d degree
+	 * 
+	 * @param m minute
+	 * 
+	 * @param s second
+	 * 
+	 * @return
+	 */
+	private double convertToDegrees(double d, double m, double s) {
+		return (d + m / 60 + s / 3600);
 	}
 
 	/**
@@ -371,9 +383,8 @@ public class Event extends Component {
 	 * Adds a property to the property list
 	 */
 	private void addProperty(Property property) {
-		if (property instanceof UniqueProperty 
-			&& this.propList.contains(property)) {
-				throw new IllegalArgumentException("Property " + property.toString() + " already exists");
+		if (property instanceof UniqueProperty && this.propList.contains(property)) {
+			throw new IllegalArgumentException("Property " + property.toString() + " already exists");
 		}
 		this.propList.add(property);
 	}

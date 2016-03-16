@@ -128,8 +128,8 @@ public class TestCalendar {
 		final double EARTH_MEAN_RADIUS = 6371.0;
 		double diffLongitude = Math.abs(latitude2 - latitude1);
 		double deltaCentralAngle = Math.acos(Math.sin(Math.toRadians(latitude1)) * Math.sin(Math.toRadians(latitude2))
-				+ Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
-						* Math.cos(Math.toRadians(diffLongitude)));
+								 + Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
+								 * Math.cos(Math.toRadians(diffLongitude)));
 		return EARTH_MEAN_RADIUS * deltaCentralAngle;
 	}
 
