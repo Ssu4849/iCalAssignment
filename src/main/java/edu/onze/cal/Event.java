@@ -162,7 +162,6 @@ public class Event extends Component {
 		}
 		addProperty(new Summary(sumLine));
 		return sumLine;
-
 	}
 
 	/**
@@ -174,9 +173,7 @@ public class Event extends Component {
 	 */
 	public String addDescription(String description) {
 		String descLine = "";
-		if (description.trim().compareTo("") == 0) {
-			descLine = "";
-		} else {
+		if (description.trim().compareTo("") != 0) {
 			descLine = DESCRIPTION_PROPERTY_TAG + description + CRLF;
 			addProperty(new Description(descLine));
 		}
@@ -192,9 +189,7 @@ public class Event extends Component {
 	 */
 	public String addLocation(String location) {
 		String locLine = "";
-		if (location.trim().compareTo("") == 0) {
-			locLine = "";
-		} else {
+		if (location.trim().compareTo("") != 0) {
 			locLine = LOCATION_PROPERTY_TAG + location + CRLF;
 			addProperty(new Location(locLine));
 		}
@@ -211,20 +206,13 @@ public class Event extends Component {
 	 *             if geoposition is out of range
 	 */
 	public String addGeoPosition(String geoPosition) throws IllegalStateException {
-		String returnStr = "";
-		String geoPositionFormatted = "";
 		String geoLine = "";
 		if (geoPosition.compareTo("") != 0) {
-			geoPositionFormatted = parseGeographicPosition(geoPosition);
+			String geoPositionFormatted = parseGeographicPosition(geoPosition);
 			geoLine = GEOGRAPHIC_LOCATION_PROPERTY_TAG + geoPositionFormatted + CRLF;
 			addProperty(new Geo(geoLine));
 		}
-		if (geoLine.compareTo("") == 0) {
-			returnStr = "";
-		} else {
-			returnStr = geoLine;
-		}
-		return returnStr;
+		return geoLine;
 	}
 
 	/**
@@ -237,9 +225,7 @@ public class Event extends Component {
 	 */
 	public String addComment(String comment) {
 		String commentLine = "";
-		if (comment.trim().compareTo("") == 0) {
-			commentLine = "";
-		} else {
+		if (comment.trim().compareTo("") != 0) {
 			commentLine = COMMENT_PROPERTY_TAG + comment + CRLF;
 			addProperty(new Comment(commentLine));
 		}
@@ -305,7 +291,6 @@ public class Event extends Component {
 	 */
 	public String setClassification(int access) {
 		String returnStr = "";
-
 		switch (access) {
 		case 2:
 			String s1 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
