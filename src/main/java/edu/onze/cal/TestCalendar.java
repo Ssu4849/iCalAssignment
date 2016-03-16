@@ -75,11 +75,12 @@ public class TestCalendar {
 	}
 
 	/**
-	 * Read all events into an icalendar object. 
-	 * If the file does not have proper event header(s) such as BEGIN:VEVENT,
-	 * no events will be read.
-	 * If the ics file does not have proper formatting, eg. does not have END:VEVENT,
-	 * it will read until the first unsupported property, and terminate at that point
+	 * Read all events into an icalendar object. If the file does not have
+	 * proper event header(s) such as BEGIN:VEVENT, no events will be read. If
+	 * the ics file does not have proper formatting, eg. does not have
+	 * END:VEVENT, it will read until the first unsupported property, and
+	 * terminate at that point
+	 * 
 	 * @param file
 	 *            the file with icalendar
 	 * @iCalObj the calendar object generated from the file
@@ -191,20 +192,18 @@ public class TestCalendar {
 					System.err.println("Longitude is not the correct format");
 					incorrectFormat = true;
 				} else {
-					incorrectFormat = false;
-				}
-
-				// Parses User input for anything != a decimal
-				if (!incorrectFormat && geoPosition.trim().length() != 0) {
-					try {
-						for (String latLong : geoPosition.split(" ")) {
-							for (String coordinate : latLong.split(",")) {
-								Double.parseDouble(coordinate);
+					// Parses User input for anything != a decimal
+					if (!incorrectFormat && geoPosition.trim().length() != 0) {
+						try {
+							for (String latLong : geoPosition.split(" ")) {
+								for (String coordinate : latLong.split(",")) {
+									Double.parseDouble(coordinate);
+								}
 							}
+						} catch (NumberFormatException e) {
+							System.err.println("Geographic position not a decimal");
+							incorrectFormat = true;
 						}
-					} catch (NumberFormatException e) {
-						System.err.println("Geographic position not a decimal");
-						incorrectFormat = true;
 					}
 				}
 			}
@@ -258,7 +257,7 @@ public class TestCalendar {
 	@SuppressWarnings("deprecation")
 	/**
 	 * Will read all .ics files of given date and calculate great circle
-	 * distance for each event except the last event. 
+	 * distance for each event except the last event.
 	 */
 	public static void readCalculateCircleDistance() {
 		System.out.println("Reading all .ics files in directory...");
