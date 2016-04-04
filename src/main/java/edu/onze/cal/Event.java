@@ -211,6 +211,8 @@ public class Event extends Component {
 	}
 
 	/**
+	 * Will add the comment string to the comment property. If comment exists, will 
+	 * remove the existing comment and add a new comment.
 	 * @see <a href="https://tools.ietf.org/html/rfc5545#section-3.8.1.4">https:
 	 *      //tools.ietf.org/html/rfc5545#section-3.8.1.4</a>
 	 * @param access
@@ -222,9 +224,23 @@ public class Event extends Component {
 		String commentLine = "";
 		if (comment.trim().compareTo("") != 0) {
 			commentLine = COMMENT_PROPERTY + comment + CRLF;
-			addProperty(new Comment(commentLine));
+			if (this.getComment() == null) {
+				addProperty(new Comment(commentLine));
+			} else {
+				propList.remove(this.getComment());
+				addProperty(new Comment(commentLine));
+			}
 		}
 		return commentLine;
+	}
+
+	private Comment getComment() {
+		for (Property p : propList) {
+			if (p instanceof Comment) {
+				return (Comment) p;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -407,4 +423,5 @@ public class Event extends Component {
 		}
 		return null;
 	}
+
 }
