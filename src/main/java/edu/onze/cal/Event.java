@@ -36,18 +36,18 @@ public class Event extends Component {
 	 */
 	public static final String EVENT_HEADER = "BEGIN:VEVENT";
 	public static final String EVENT_TRAILER = "END:VEVENT";
-	public static final String DTSTART_PROPERTY_TAG = "DTSTART:";
-	public static final String DTEND_PROPERTY_TAG = "DTEND:";
+	public static final String DTSTART_PROPERTY = "DTSTART:";
+	public static final String DTEND_PROPERTY = "DTEND:";
 
 	/**
-	 * These parameters are optional
+	 * These properties are optional
 	 */
-	public static final String DESCRIPTION_PROPERTY_TAG = "DESCRIPTION:";
-	public static final String SUMMARY_PROPERTY_TAG = "SUMMARY:";
-	public static final String LOCATION_PROPERTY_TAG = "LOCATION:";
-	public static final String GEOGRAPHIC_LOCATION_PROPERTY_TAG = "GEO:";
-	public static final String CLASSIFICATION_PROPERTY_TAG = "CLASS:";
-	public static final String COMMENT_PROPERTY_TAG = "COMMENT:";
+	public static final String DESCRIPTION_PROPERTY = "DESCRIPTION:";
+	public static final String SUMMARY_PROPERTY = "SUMMARY:";
+	public static final String LOCATION_PROPERTY = "LOCATION:";
+	public static final String GEOGRAPHIC_LOCATION_PROPERTY = "GEO:";
+	public static final String CLASSIFICATION_PROPERTY = "CLASS:";
+	public static final String COMMENT_PROPERTY = "COMMENT:";
 
 	/**
 	 * Stores the strings of classification types
@@ -100,18 +100,13 @@ public class Event extends Component {
 	 */
 	@Override
 	public String addTimeDateSpan(String dateStart, String dateEnd) throws ParseException {
-		String dateStartLine = "";
-		String dateEndLine = "";
-		String dateStartParsed = "";
-		String dateEndParsed = "";
-
-		dateStartParsed = parseDate(dateStart);
-		dateEndParsed = parseDate(dateEnd);
+		String dateStartParsed = parseDate(dateStart);
+		String dateEndParsed = parseDate(dateEnd);
 		if (endDateGtrStartDate(dateStart, dateEnd)) {
 			throw new IllegalArgumentException("Start date is > end date!");
 		}
-		dateStartLine = DTSTART_PROPERTY_TAG + dateStartParsed + CRLF;
-		dateEndLine = DTEND_PROPERTY_TAG + dateEndParsed + CRLF;
+		String dateStartLine = DTSTART_PROPERTY + dateStartParsed + CRLF;
+		String dateEndLine = DTEND_PROPERTY + dateEndParsed + CRLF;
 
 		addProperty(new Dtstart(dateStartLine));
 		addProperty(new Dtend(dateEndLine));
@@ -156,9 +151,9 @@ public class Event extends Component {
 	public String addSummary(String summary) {
 		String sumLine = "";
 		if (summary.trim().compareTo("") == 0) {
-			sumLine = SUMMARY_PROPERTY_TAG + "(No Title)" + CRLF;
+			sumLine = SUMMARY_PROPERTY + "(No Title)" + CRLF;
 		} else {
-			sumLine = SUMMARY_PROPERTY_TAG + summary + CRLF;
+			sumLine = SUMMARY_PROPERTY + summary + CRLF;
 		}
 		addProperty(new Summary(sumLine));
 		return sumLine;
@@ -174,7 +169,7 @@ public class Event extends Component {
 	public String addDescription(String description) {
 		String descLine = "";
 		if (description.trim().compareTo("") != 0) {
-			descLine = DESCRIPTION_PROPERTY_TAG + description + CRLF;
+			descLine = DESCRIPTION_PROPERTY + description + CRLF;
 			addProperty(new Description(descLine));
 		}
 		return descLine;
@@ -190,7 +185,7 @@ public class Event extends Component {
 	public String addLocation(String location) {
 		String locLine = "";
 		if (location.trim().compareTo("") != 0) {
-			locLine = LOCATION_PROPERTY_TAG + location + CRLF;
+			locLine = LOCATION_PROPERTY + location + CRLF;
 			addProperty(new Location(locLine));
 		}
 		return locLine;
@@ -209,7 +204,7 @@ public class Event extends Component {
 		String geoLine = "";
 		if (geoPosition.compareTo("") != 0) {
 			String geoPositionFormatted = parseGeographicPosition(geoPosition);
-			geoLine = GEOGRAPHIC_LOCATION_PROPERTY_TAG + geoPositionFormatted + CRLF;
+			geoLine = GEOGRAPHIC_LOCATION_PROPERTY + geoPositionFormatted + CRLF;
 			addProperty(new Geo(geoLine));
 		}
 		return geoLine;
@@ -226,7 +221,7 @@ public class Event extends Component {
 	public String addComment(String comment) {
 		String commentLine = "";
 		if (comment.trim().compareTo("") != 0) {
-			commentLine = COMMENT_PROPERTY_TAG + comment + CRLF;
+			commentLine = COMMENT_PROPERTY + comment + CRLF;
 			addProperty(new Comment(commentLine));
 		}
 		return commentLine;
@@ -269,11 +264,14 @@ public class Event extends Component {
 	}
 
 	/**
-	 * @param d degree
+	 * @param d
+	 *            degree
 	 * 
-	 * @param m minute
+	 * @param m
+	 *            minute
 	 * 
-	 * @param s second
+	 * @param s
+	 *            second
 	 * 
 	 * @return
 	 */
@@ -293,17 +291,17 @@ public class Event extends Component {
 		String returnStr = "";
 		switch (access) {
 		case 2:
-			String s1 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
+			String s1 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
 			addProperty(new Classification(s1));
 			returnStr = s1;
 			break;
 		case 3:
-			String s2 = CLASSIFICATION_PROPERTY_TAG + "CONFIDENTIAL" + CRLF;
+			String s2 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
 			addProperty(new Classification(s2));
 			returnStr = s2;
 			break;
 		default:
-			String s3 = CLASSIFICATION_PROPERTY_TAG + "PRIVATE" + CRLF;
+			String s3 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
 			addProperty(new Classification(s3));
 			returnStr = s3;
 			break;
@@ -325,13 +323,13 @@ public class Event extends Component {
 		String propHeader = line.substring(0, line.indexOf(":") + 1);
 		switch (propHeader) {
 
-		case CLASSIFICATION_PROPERTY_TAG:
+		case CLASSIFICATION_PROPERTY:
 			addProperty(new Classification(line + CRLF));
 			break;
-		case DESCRIPTION_PROPERTY_TAG:
+		case DESCRIPTION_PROPERTY:
 			addProperty(new Description(line + CRLF));
 			break;
-		case DTSTART_PROPERTY_TAG:
+		case DTSTART_PROPERTY:
 			// sets the start date of this event
 			SimpleDateFormat ISOFORMAT = new SimpleDateFormat(ISO_8601_FORMAT);
 			try {
@@ -341,19 +339,19 @@ public class Event extends Component {
 				System.err.println("Error parsing date: " + line.substring((line.indexOf(":") + 1), line.length()));
 			}
 			break;
-		case DTEND_PROPERTY_TAG:
+		case DTEND_PROPERTY:
 			addProperty(new Dtend(line + CRLF));
 			break;
-		case LOCATION_PROPERTY_TAG:
+		case LOCATION_PROPERTY:
 			addProperty(new Location(line + CRLF));
 			break;
-		case GEOGRAPHIC_LOCATION_PROPERTY_TAG:
+		case GEOGRAPHIC_LOCATION_PROPERTY:
 			addProperty(new Geo(line + CRLF));
 			break;
-		case SUMMARY_PROPERTY_TAG:
+		case SUMMARY_PROPERTY:
 			addProperty(new Summary(line + CRLF));
 			break;
-		case COMMENT_PROPERTY_TAG:
+		case COMMENT_PROPERTY:
 			addProperty(new Comment(line + CRLF));
 			break;
 		default:
