@@ -319,7 +319,7 @@ public class Event extends Component {
 	 *             if an unique property is added twice
 	 */
 	public boolean addPropNoFormatRequired(String line) throws IllegalArgumentException {
-		boolean propertyIsValid = true;
+		boolean isValid = true;
 		String propHeader = line.substring(0, line.indexOf(":") + 1);
 		switch (propHeader) {
 
@@ -356,10 +356,10 @@ public class Event extends Component {
 			break;
 		default:
 			System.err.println("Property unsupported: " + line.substring(0, (line.indexOf(":"))));
-			propertyIsValid = false;
+			isValid = false;
 			break;
 		}
-		return propertyIsValid;
+		return isValid;
 	}
 
 	/**

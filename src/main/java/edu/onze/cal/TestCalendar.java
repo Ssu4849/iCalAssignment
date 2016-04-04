@@ -52,7 +52,24 @@ public class TestCalendar {
 				e.printStackTrace();
 			}
 		} else if (choice == 3) {
-			readCalculateCircleDistance();
+			System.out.println("Reading all .ics files in directory...");
+
+			System.out.println("Enter a date you want to read (Format YYYY-MM-DD)");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				String dateString = sc.nextLine();
+				Date dateSelected = dateFormat.parse(dateString);
+				List<iCalObj> calendarList = readCalculateCircleDistance(dateSelected);
+				try {
+					for (iCalObj cal : calendarList) {
+						printICSFile(cal);
+					}
+				} catch (IOException e) {
+					System.err.println("Error printing to ics file");
+				}
+			} catch (ParseException e) {
+				System.err.println("Format is incorrect");
+			}
 		} else {
 			System.err.println(
 					"Usage: Enter 1 to write, 2 to read a single file, 3 to read all files and calculate great circle distance");
@@ -123,13 +140,12 @@ public class TestCalendar {
 	 * @param longitude2
 	 * @return
 	 */
-	public static double getGreatCircleDistance(double latitude1, double latitude2, double longitude1,
-			double longitude2) {
+	public static double distance(double latitude1, double latitude2, double longitude1, double longitude2) {
 		final double EARTH_MEAN_RADIUS = 6371.0;
 		double diffLongitude = Math.abs(latitude2 - latitude1);
 		double deltaCentralAngle = Math.acos(Math.sin(Math.toRadians(latitude1)) * Math.sin(Math.toRadians(latitude2))
-								 + Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
-								 * Math.cos(Math.toRadians(diffLongitude)));
+				+ Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
+						* Math.cos(Math.toRadians(diffLongitude)));
 		return EARTH_MEAN_RADIUS * deltaCentralAngle;
 	}
 
@@ -257,21 +273,9 @@ public class TestCalendar {
 	@SuppressWarnings("deprecation")
 	/**
 	 * Will read all .ics files of given date and calculate great circle
-	 * distance for each event except the last event.
+	 * distance for each event of the date selected except the last event.
 	 */
-	public static void readCalculateCircleDistance() {
-		System.out.println("Reading all .ics files in directory...");
-
-		System.out.println("Enter a date you want to read (Format YYYY-MM-DD)");
-		String dateString = sc.nextLine();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date dateSelected = null;
-		try {
-			dateSelected = dateFormat.parse(dateString);
-		} catch (ParseException e) {
-
-		}
-
+	public static List<iCalObj> readCalculateCircleDistance(Date dateSelected) {
 		List<Component> eventList = new ArrayList<Component>();
 		List<iCalObj> calendarList = new ArrayList<iCalObj>();
 
@@ -283,9 +287,8 @@ public class TestCalendar {
 		});
 
 		try {
-			for (File file : fileList) {
-				iCalObj calendar;
-				calendar = readEvents(file);
+			for (File f : fileList) {
+				iCalObj calendar = readEvents(f);
 				eventList.addAll(calendar.getComponentList());
 				calendarList.add(calendar);
 			}
@@ -308,6 +311,15 @@ public class TestCalendar {
 			}
 		}
 
+		// removes all events that do not have a geographic location property
+		Iterator<Component> it2 = eventList.iterator();
+		while (it2.hasNext()) {
+			Component c = it2.next();
+			if (c.getGeographicPosition() == null) {
+				it2.remove();
+			}
+		}
+
 		for (int i = 0; i < (eventList.size() - 1); i++) {
 			Geo geo1 = eventList.get(i).getGeographicPosition();
 			Double latGeo1 = Double.parseDouble(geo1.getContent().split(";")[0]);
@@ -316,21 +328,14 @@ public class TestCalendar {
 			Double latGeo2 = Double.parseDouble(geo2.getContent().split(";")[0]);
 			Double longGeo2 = Double.parseDouble(geo2.getContent().split(";")[1]);
 
-			Double distanceKm = new BigDecimal(getGreatCircleDistance(latGeo1, latGeo2, longGeo1, longGeo2))
+			Double distanceKm = new BigDecimal(distance(latGeo1, latGeo2, longGeo1, longGeo2))
 					.setScale(3, BigDecimal.ROUND_FLOOR).doubleValue();
 			Double distanceMi = new BigDecimal(distanceKm * 0.62137).setScale(3, BigDecimal.ROUND_FLOOR).doubleValue();
 
 			eventList.get(i)
 					.addComment("The distance to the next event is " + distanceKm + " km or " + distanceMi + " miles.");
 		}
-
-		try {
-			for (iCalObj calendar : calendarList) {
-				printICSFile(calendar);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		return calendarList;
 	}
 
 	private static boolean validateDatetime(String dateTime) {
