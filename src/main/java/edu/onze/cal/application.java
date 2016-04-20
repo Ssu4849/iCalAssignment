@@ -56,15 +56,15 @@ public class application {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 620, 420);
+		frame.setBounds(100, 100, 620, 546);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		textField = new JTextField();
 		textField.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Summary");
+		JLabel lblSummary = new JLabel("Summary");
 		
-		JLabel lblNewLabel_1 = new JLabel("Start Time");
+		JLabel lblStartTime = new JLabel("Start Time");
 		
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
@@ -110,38 +110,42 @@ public class application {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(32)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblEndTime)
-						.addComponent(lblNewLabel_1)
-						.addComponent(lblNewLabel)
-						.addComponent(lblLocation)
-						.addComponent(lblLatititude)
-						.addComponent(lblLongitutde))
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(textField_5)
-						.addComponent(textField)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(238)
+							.addComponent(rdbtnConfidential))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(29)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblEndDate, Alignment.LEADING)
-								.addComponent(lblStartDate, Alignment.LEADING))
+								.addComponent(lblEndTime)
+								.addComponent(lblStartTime)
+								.addComponent(lblSummary)
+								.addComponent(lblLocation)
+								.addComponent(lblLatititude)
+								.addComponent(lblLongitutde))
 							.addGap(18)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(textField_4)
-								.addComponent(textField_2, GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(textField_7, Alignment.LEADING)
-								.addComponent(textField_6, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(rdbtnPublic)
-								.addComponent(rdbtnConfidential)
-								.addComponent(rdbtnPrivate))
-							.addGap(25)))
+								.addComponent(textField_5)
+								.addComponent(textField)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addGap(29)
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(lblEndDate, Alignment.LEADING)
+										.addComponent(lblStartDate, Alignment.LEADING))
+									.addGap(18)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(textField_4)
+										.addComponent(textField_2, GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+										.addComponent(textField_7, Alignment.LEADING)
+										.addComponent(textField_6, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
+									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(rdbtnPublic)
+										.addComponent(rdbtnPrivate))
+									.addGap(61)))))
 					.addContainerGap(29, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
@@ -150,13 +154,13 @@ public class application {
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel))
+						.addComponent(lblSummary))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblStartDate)
 						.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel_1))
+						.addComponent(lblStartTime))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblEndTime)
@@ -172,15 +176,18 @@ public class application {
 						.addComponent(lblLatititude)
 						.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(rdbtnPublic))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblLongitutde))
-						.addComponent(rdbtnPrivate))
-					.addGap(15)
-					.addComponent(rdbtnConfidential)
-					.addContainerGap(155, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblLongitutde))
+							.addGap(46)
+							.addComponent(rdbtnConfidential))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(17)
+							.addComponent(rdbtnPrivate)))
+					.addContainerGap(130, Short.MAX_VALUE))
 		);
 		frame.getContentPane().setLayout(groupLayout);
 	}
