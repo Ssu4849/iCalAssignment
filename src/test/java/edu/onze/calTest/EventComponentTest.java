@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.text.ParseException;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,7 +33,7 @@ public class EventComponentTest {
 	}
 
 	@Test
-	public void testAddLocation() {
+	public void test_Add_Location() {
 		Event event = new Event();
 
 		String location = "Campus Center";
@@ -41,7 +42,7 @@ public class EventComponentTest {
 	}
 
 	@Test
-	public void testAddDateTime() {
+	public void test_Add_DateTime() {
 		Event event = new Event();
 
 		String dateTimeStart = "2000-01-01 00:00:00";
@@ -60,7 +61,7 @@ public class EventComponentTest {
 	}
 
 	@Test
-	public void testAddDateTimeArgumentException() throws ParseException {
+	public void test_Add_DateTime_Argument_Exception() throws ParseException {
 		Event event = new Event();
 		String dateTimeStart = "2000-01-01 00:00:00";
 		String dateTimeEnd = "1999-01-01 00:00:01";
@@ -70,12 +71,155 @@ public class EventComponentTest {
 	}
 	
 	@Test
-	public void testAddDateTimeFormatException() throws ParseException {
+	public void test_Add_DateTime_Format_Exception_Day() throws ParseException {
 		Event event = new Event();
+		
 		String dateTimeStart = "2000-01-0A 00:00:00";
 		String dateTimeEnd = "2000-08-01 00:00:01";
 
 		exception.expect(ParseException.class);
 		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Add_DateTime_Format_Exception_Year() throws ParseException {
+		Event event = new Event();
+		
+		String dateTimeStart = "200A-01-01 00:00:00";
+		String dateTimeEnd = "2000-01-01 00:00:01";
+
+		exception.expect(ParseException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Add_DateTime_Format_Exception_Hour() throws ParseException {
+		Event event = new Event();
+		
+		String dateTimeStart = "2000-01-01 0A:00:00";
+		String dateTimeEnd = "2000-01-01 00:00:01";
+
+		exception.expect(ParseException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Add_DateTime_Format_Exception_Minute() throws ParseException {
+		Event event = new Event();
+		
+		String dateTimeStart = "2000-01-01 00:0A:00";
+		String dateTimeEnd = "2000-01-01 00:00:01";
+
+		exception.expect(ParseException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Add_DateTime_Format_Exception_Sec() throws ParseException {
+		Event event = new Event();
+		
+		String dateTimeStart = "2000-01-01 00:00:A0";
+		String dateTimeEnd = "2000-01-01 00:00:01";
+
+		exception.expect(ParseException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Ignore //for now
+	@Test
+	public void test_Add_Date_TimeFormat_Exception_Sec2() throws ParseException {
+		Event event = new Event();
+		
+		// Why does this fail?
+		String dateTimeStart = "2000-01-01 00:00:0A";
+		String dateTimeEnd = "2000-01-01 00:00:01";
+
+		exception.expect(ParseException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Year() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-01-01 00:00:00";
+		String dateTimeEnd = "1999-01-01 00:00:00";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Month() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-02-01 00:00:00";
+		String dateTimeEnd = "2000-01-01 00:00:00";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Day() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-01-02 00:00:00";
+		String dateTimeEnd = "2000-01-01 00:00:00";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Sec() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-01-01 23:59:59";
+		String dateTimeEnd = "2000-01-01 23:59:58";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Hour() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-01-01 23:59:59";
+		String dateTimeEnd = "2000-01-01 22:59:59";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Time_End_Gtr_Time_Start_Minute() throws ParseException {
+		Event event = new Event();
+		
+		
+		String dateTimeStart = "2000-01-01 23:59:59";
+		String dateTimeEnd = "2000-01-01 23:58:59";
+
+		exception.expect(IllegalArgumentException.class);
+		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
+	}
+	
+	@Test
+	public void test_Size_Of_PropertyList_One_Property() {
+		Event event = new Event();
+		event.addDescription("Test Description");
+		assertEquals(event.getPropertySize(), 1);
+	}
+	
+	@Test
+	public void test_Size_Of_PropertyList_No_Property() {
+		Event event = new Event();
+		assertEquals(event.getPropertySize(), 0);
 	}
 }

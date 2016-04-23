@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author Team Onze
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
  */
 public class iCalObj {
 
@@ -43,10 +42,10 @@ public class iCalObj {
 	/**
 	 * component list
 	 */
-	public List<Component> componentList = new ArrayList<Component>();
+	private List<Component> componentList = new ArrayList<Component>();
 
 	/**
-	 * Instantiates an iCalendar object with no components
+	 * Constructor for an iCalendar object with no components
 	 */
 	public iCalObj(File file) {
 		this.file = file;
@@ -79,17 +78,22 @@ public class iCalObj {
 	public Event createEvent(String dateTimeStart, String dateTimeEnd, String summary, String description,
 			String location) throws ParseException, IllegalArgumentException {
 		Event event = new Event();
-
 		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
 		event.addDescription(description);
 		event.addSummary(summary);
-
-		if (location.compareTo("") != 0) {
-			event.addLocation(location);
-		}
-		
+		event.addLocation(location);
 		getComponentList().add(event);
 		return event;
+	}
+
+	/**
+	 * Adds an event to the calendar
+	 * 
+	 * @param e
+	 *            the event to add
+	 */
+	public void addEvent(Event e) {
+		componentList.add(e);
 	}
 
 	/**
@@ -116,5 +120,16 @@ public class iCalObj {
 	 */
 	public File getFile() {
 		return this.file;
+	}
+
+	/**
+	 * @return the number of component this calendar has
+	 */
+	public int getComponentSize() {
+		return this.componentList.size();
+	}
+	
+	public void setFileName(File filename) {
+		this.file.renameTo(filename);
 	}
 }
