@@ -423,7 +423,4 @@ public class Event extends Component {
 		}
 		return null;
 	}
-	
-	//This is a test msg
-
 }
