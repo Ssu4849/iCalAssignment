@@ -292,7 +292,12 @@ public class Event extends Component {
 	 * @return
 	 */
 	private double convertToDegrees(double d, double m, double s) {
-		return (d + m / 60 + s / 3600);
+		if (d < 0) {
+			return (d - m / 60 - s / 3600);
+		}
+		else {
+			return (d + m / 60 + s / 3600);
+		}
 	}
 
 	/**
