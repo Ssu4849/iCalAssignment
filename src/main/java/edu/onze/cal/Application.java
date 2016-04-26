@@ -5,23 +5,31 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Enumeration;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.JTextArea;
+import javax.swing.JCheckBox;
 
 public class Application {
 
 	private JFrame frmTeamOnze;
-	private JTextField textField;
+	private JTextField summaryField;
 	private JLabel lblLocation;
 	private JTextField locationField;
 	private JLabel lblLatititude;
@@ -49,14 +57,13 @@ public class Application {
 	private JButton btnCalcDist;
 
 	private static final String HOURS[] = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
-	private static final String MINUTES[] = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
-			"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
-			"31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48",
-			"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" };
+	private static final String MINUTES[] = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
+			"12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+			"30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47",
+			"48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" };
 	private static final String MERIDIEM[] = { "AM", "PM" };
 
-	private static final String MONTHS[] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "SEPT", "OCT", "NOV",
-			"DEC" };
+	private static final String MONTHS[] = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
 	private static final String DAYS[] = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13",
 			"14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30" };
 	private static final String YEARS[] = { "1971", "1972", "1973", "1974", "1975", "1976", "1977", "1978", "1979",
@@ -82,7 +89,9 @@ public class Application {
 	private JComboBox tEndMinBox;
 	private JComboBox tStartMeridiemBox;
 	private JComboBox tEndMeridiemBox;
-	private JTextArea textArea;
+	private JTextArea descArea;
+
+	private boolean geoEnabled = false;
 
 	/**
 	 * Launch the application.
@@ -98,7 +107,7 @@ public class Application {
 						// Do something with windows theme is not available
 					}
 					window.frmTeamOnze.setVisible(true);
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -117,20 +126,18 @@ public class Application {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		final JFileChooser fileChooser = new JFileChooser("./");
-
 		frmTeamOnze = new JFrame();
 		frmTeamOnze.setResizable(false);
 		frmTeamOnze.setTitle("Team Onze Event Generator");
 		frmTeamOnze.setBounds(100, 100, 540, 446);
 		frmTeamOnze.setLocationRelativeTo(null);
 		frmTeamOnze.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		ButtonGroup bg = new ButtonGroup();
 
-		textField = new JTextField();
-		textField.setBounds(101, 11, 405, 20);
-		textField.setColumns(10);
+		summaryField = new JTextField();
+		summaryField.setBounds(101, 11, 405, 20);
+		summaryField.setColumns(10);
 
 		JLabel lblSummary = new JLabel("Summary");
 		lblSummary.setBounds(31, 14, 76, 14);
@@ -155,14 +162,15 @@ public class Application {
 		locationField.setColumns(10);
 
 		lblLatititude = new JLabel("Latititude");
-		lblLatititude.setBounds(32, 165, 75, 14);
+		lblLatititude.setBounds(32, 175, 75, 14);
 
 		secLatField = new JTextField();
-		secLatField.setBounds(212, 162, 55, 20);
+		secLatField.setEnabled(false);
+		secLatField.setBounds(212, 175, 55, 20);
 		secLatField.setColumns(10);
 
 		JLabel lblLongitutde = new JLabel("Longitutde");
-		lblLongitutde.setBounds(32, 200, 75, 14);
+		lblLongitutde.setBounds(32, 202, 75, 14);
 
 		JRadioButton rdbtnPublic = new JRadioButton("Public");
 		rdbtnPublic.addActionListener(new ActionListener() {
@@ -175,7 +183,7 @@ public class Application {
 				}
 			}
 		});
-		
+
 		rdbtnPublic.setBounds(394, 161, 83, 23);
 
 		JRadioButton rdbtnPrivate = new JRadioButton("Private");
@@ -204,7 +212,7 @@ public class Application {
 		});
 		rdbtnConfidential.setBounds(394, 213, 112, 23);
 		rdbtnConfidential.setSelected(true);
-		
+
 		bg.add(rdbtnPublic);
 		bg.add(rdbtnPrivate);
 		bg.add(rdbtnConfidential);
@@ -240,37 +248,151 @@ public class Application {
 		classLabel.setBounds(384, 142, 109, 14);
 
 		degLatBox = new JComboBox(Degrees);
-		degLatBox.setBounds(101, 162, 51, 20);
-		degLatBox.setSelectedIndex(0);
+		degLatBox.setEnabled(false);
+		degLatBox.setBounds(101, 175, 51, 20);
+		degLatBox.setSelectedIndex(-1);
 
 		minLatBox = new JComboBox(MINUTES);
-		minLatBox.setBounds(157, 162, 51, 20);
+		minLatBox.setEnabled(false);
+		minLatBox.setSelectedIndex(-1);
+		minLatBox.setBounds(157, 175, 51, 20);
 
 		directionLatBox = new JComboBox(LATITUDE_DIRECTIONS);
-		directionLatBox.setBounds(271, 162, 51, 20);
+		directionLatBox.setEnabled(false);
+		directionLatBox.setSelectedIndex(-1);
+		directionLatBox.setBounds(271, 175, 51, 20);
 
 		degLngBox = new JComboBox(Degrees);
-		degLngBox.setBounds(101, 197, 51, 20);
-		degLngBox.setSelectedIndex(0);
+		degLngBox.setEnabled(false);
+		degLngBox.setBounds(101, 202, 51, 20);
+		degLngBox.setSelectedIndex(-1);
 
 		minLngBox = new JComboBox(MINUTES);
-		minLngBox.setBounds(157, 197, 51, 20);
+		minLngBox.setEnabled(false);
+		minLngBox.setSelectedIndex(-1);
+		minLngBox.setBounds(157, 202, 51, 20);
 
 		secLngField = new JTextField();
-		secLngField.setBounds(212, 197, 55, 20);
+		secLngField.setEnabled(false);
+		secLngField.setBounds(212, 202, 55, 20);
 		secLngField.setColumns(10);
 
 		directionLngBox = new JComboBox(LONGITUDE_DIRECTIONS);
-		directionLngBox.setBounds(271, 197, 51, 20);
+		directionLngBox.setEnabled(false);
+		directionLngBox.setSelectedIndex(-1);
+		directionLngBox.setBounds(271, 202, 51, 20);
 
 		btnExport = new JButton("Export to .ICS");
 		btnExport.setBounds(384, 359, 122, 23);
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JButton classBtn = (JButton) e.getSource();
+				final JFileChooser fileChooser = new JFileChooser("./");
+				JButton btnExport = (JButton) e.getSource();
 
-				if (classBtn.getText().equals("Export to .ICS")) {
-					fileChooser.showSaveDialog(classBtn);
+				if (btnExport.getText().equals("Export to .ICS")) {
+
+					int returnVal = fileChooser.showSaveDialog(fileChooser);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fileChooser.getSelectedFile();
+						if (geoEnabled && !checkCoordinate()) {
+							JOptionPane.showMessageDialog(null,
+									"One or more fields of your coordinate(s) are empty or invalid!");
+						} else {
+							String summary = summaryField.getText();
+							String description = descArea.getText();
+							String geoLocation = "";
+							String location = locationField.getText();
+							String classification = "";
+
+							String startDateTime = "";
+							String endDateTime = "";
+							String hr = "";
+							String min = "";
+							String sec = "";
+
+							String yr = "";
+							String mon = "";
+							String day = "";
+							if (Integer.parseInt((String) tStartHrBox.getSelectedItem()) == 12
+									&& tStartMeridiemBox.getSelectedItem().equals("AM")) {
+								hr = "00";
+							}
+							else if (tStartMeridiemBox.getSelectedItem().equals("PM")) {
+								hr = String.valueOf(Integer.parseInt((String) (tStartHrBox.getSelectedItem())) + 12);
+							}
+							else {
+								hr = (String) tStartHrBox.getSelectedItem();
+							}
+							min = (String) tStartMinBox.getSelectedItem();
+							yr = (String) dStartYr.getSelectedItem();
+							mon = (String) dStartMon.getSelectedItem();
+							day = (String) dStartDay.getSelectedItem();
+
+							startDateTime = yr + "-" + mon + "-" + day + " " + hr + ":" + min + ":" + "00";
+
+							if (Integer.parseInt((String) tEndHrBox.getSelectedItem()) == 12
+									&& tEndMeridiemBox.getSelectedItem().equals("AM")) {
+								hr = "00";
+							}
+							else if (tEndMeridiemBox.getSelectedItem().equals("PM")) {
+								hr = String.valueOf(Integer.parseInt((String) (tEndHrBox.getSelectedItem())) + 12);
+							}
+							else {
+								hr = (String) tEndHrBox.getSelectedItem();
+							}
+							min = (String) tEndMinBox.getSelectedItem();
+							yr = (String) dEndYr.getSelectedItem();
+							mon = (String) dEndMon.getSelectedItem();
+							day = (String) dEndDay.getSelectedItem();
+
+							endDateTime = yr + "-" + mon + "-" + day + " " + hr + ":" + min + ":" + "00";
+							if (geoEnabled) {
+								String degLat = (String) degLatBox.getSelectedItem();
+								String degLng = (String) degLngBox.getSelectedItem();
+								String minLat = (String) minLatBox.getSelectedItem();
+								String minLng = (String) minLngBox.getSelectedItem();
+								String secLat = (String) secLatField.getText();
+								String secLng = (String) secLngField.getText();
+
+								if (directionLngBox.getSelectedItem().equals("W")) {
+									Integer dL = Integer.parseInt(degLng);
+									degLng = String.valueOf(dL *= -1);
+								}
+								if (directionLatBox.getSelectedItem().equals("S")) {
+									Integer dL = Integer.parseInt(degLat);
+									degLat = String.valueOf(dL *= -1);
+								}
+
+								geoLocation = degLat + "," + minLat + "," + secLat + " " + degLng + "," + minLng + ","
+										+ secLng;
+							}
+
+							System.out.println(geoLocation);
+							
+							for (Enumeration<AbstractButton> buttons = bg.getElements(); buttons.hasMoreElements();) {
+								AbstractButton button = buttons.nextElement();
+
+								if (button.isSelected()) {
+									String text = button.getText();
+									switch (text) {
+									case "Public":
+										classification = "1";
+										break;
+									case "Private":
+										classification = "2";
+										break;
+									case "Confidential":
+										classification = "3";
+										break;
+									}
+								}
+							}
+
+							generateICS(file, startDateTime, endDateTime, summary, description, location, geoLocation,
+									classification);
+						}
+
+					}
 				}
 			}
 		});
@@ -306,25 +428,25 @@ public class Application {
 		frmTeamOnze.getContentPane().add(dStartYr);
 		frmTeamOnze.getContentPane().add(dEndYr);
 		frmTeamOnze.getContentPane().add(locationField);
-		frmTeamOnze.getContentPane().add(textField);
+		frmTeamOnze.getContentPane().add(summaryField);
 
 		degLabel = new JLabel("Deg");
-		degLabel.setBounds(101, 149, 45, 14);
+		degLabel.setBounds(101, 159, 45, 14);
 		degLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frmTeamOnze.getContentPane().add(degLabel);
 
 		lblMin = new JLabel("Min");
-		lblMin.setBounds(162, 149, 45, 14);
+		lblMin.setBounds(162, 159, 45, 14);
 		lblMin.setHorizontalAlignment(SwingConstants.CENTER);
 		frmTeamOnze.getContentPane().add(lblMin);
 
 		secLabel = new JLabel("Sec");
-		secLabel.setBounds(218, 149, 45, 14);
+		secLabel.setBounds(218, 159, 45, 14);
 		secLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frmTeamOnze.getContentPane().add(secLabel);
 
 		dirLabel = new JLabel("Dir");
-		dirLabel.setBounds(277, 149, 45, 14);
+		dirLabel.setBounds(277, 159, 45, 14);
 		dirLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frmTeamOnze.getContentPane().add(dirLabel);
 
@@ -349,11 +471,99 @@ public class Application {
 		tEndMeridiemBox.setBounds(198, 73, 43, 20);
 		tEndMeridiemBox.setSelectedIndex(0);
 		frmTeamOnze.getContentPane().add(tEndMeridiemBox);
+
+		descArea = new JTextArea();
+		descArea.setBounds(32, 251, 343, 131);
+		descArea.setBorder(LineBorder.createGrayLineBorder());
+		frmTeamOnze.getContentPane().add(descArea);
+
+		JCheckBox chckbxEnableGeo = new JCheckBox("Enable Geo");
+		chckbxEnableGeo.setBounds(29, 138, 97, 23);
+		frmTeamOnze.getContentPane().add(chckbxEnableGeo);
+		chckbxEnableGeo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox chckbxEnableGeo = (JCheckBox) e.getSource();
+
+				if (chckbxEnableGeo.getText().equals("Enable Geo")) {
+					if (geoEnabled) {
+						geoEnabled = false;
+						degLatBox.setEnabled(false);
+						degLngBox.setEnabled(false);
+						minLatBox.setEnabled(false);
+						minLngBox.setEnabled(false);
+						secLatField.setEnabled(false);
+						secLngField.setEnabled(false);
+						directionLatBox.setEnabled(false);
+						directionLngBox.setEnabled(false);
+					} else {
+						geoEnabled = true;
+						degLatBox.setEnabled(true);
+						degLngBox.setEnabled(true);
+						minLatBox.setEnabled(true);
+						minLngBox.setEnabled(true);
+						secLatField.setEnabled(true);
+						secLngField.setEnabled(true);
+						directionLatBox.setEnabled(true);
+						directionLngBox.setEnabled(true);
+					}
+				}
+			}
+		});
+
+	}
+
+	public void generateICS(File file, String dateTimeStart, String dateTimeEnd, String summary, String description,
+			String location, String geoPosition, String classification) {
+		String path = file.getAbsolutePath().split(file.getName())[0];
+		File file2 = new File(path + file.getName() + ".ics");
 		
-		textArea = new JTextArea();
-		textArea.setBounds(32, 251, 343, 131);
-		textArea.setBorder(LineBorder.createGrayLineBorder());
-		frmTeamOnze.getContentPane().add(textArea);
-		
+		iCalObj calendar = new iCalObj(file2);
+
+		try {
+			Event event = calendar.createEvent(dateTimeStart, dateTimeEnd, summary, description, location);
+			if (geoPosition.trim().length() != 0) {
+				event.addGeoPosition(geoPosition);
+			}
+			event.setClassification(Integer.parseInt(classification));
+		} catch (IllegalArgumentException e) {
+			System.err.println(e.getMessage());
+			System.exit(0);
+		} catch (ParseException e) {
+			System.err.println("Date is incorrect format. Usage: 'YYYY-MM-DD HH:MM:SS'");
+			System.exit(0);
+		} catch (IllegalStateException e) {
+			System.err.println(e.getMessage());
+			System.exit(0);
+		}
+		try {
+			TestCalendar.printICSFile(calendar);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean checkCoordinate() {
+		boolean isValid = true;
+		if (!checkCoordBoxes()) {
+			isValid = false;
+		} else {
+			try {
+				Double.parseDouble(secLngField.getText());
+				Double.parseDouble(secLatField.getText());
+			} catch (NumberFormatException e) {
+				isValid = false;
+			}
+		}
+		return isValid;
+	}
+
+	private boolean checkCoordBoxes() {
+		if ((directionLngBox.getSelectedIndex() == -1 || directionLatBox.getSelectedIndex() == -1
+				|| minLngBox.getSelectedIndex() == -1 || minLatBox.getSelectedIndex() == -1
+				|| degLngBox.getSelectedIndex() == -1 || degLatBox.getSelectedIndex() == -1)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
