@@ -16,7 +16,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -26,6 +29,11 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
 
+/**
+ * This is our UI class
+ * Team Onze
+ * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
+ */
 public class Application {
 
 	private JFrame frmTeamOnze;
@@ -316,11 +324,9 @@ public class Application {
 							if (Integer.parseInt((String) tStartHrBox.getSelectedItem()) == 12
 									&& tStartMeridiemBox.getSelectedItem().equals("AM")) {
 								hr = "00";
-							}
-							else if (tStartMeridiemBox.getSelectedItem().equals("PM")) {
+							} else if (tStartMeridiemBox.getSelectedItem().equals("PM")) {
 								hr = String.valueOf(Integer.parseInt((String) (tStartHrBox.getSelectedItem())) + 12);
-							}
-							else {
+							} else {
 								hr = (String) tStartHrBox.getSelectedItem();
 							}
 							min = (String) tStartMinBox.getSelectedItem();
@@ -333,11 +339,9 @@ public class Application {
 							if (Integer.parseInt((String) tEndHrBox.getSelectedItem()) == 12
 									&& tEndMeridiemBox.getSelectedItem().equals("AM")) {
 								hr = "00";
-							}
-							else if (tEndMeridiemBox.getSelectedItem().equals("PM")) {
+							} else if (tEndMeridiemBox.getSelectedItem().equals("PM")) {
 								hr = String.valueOf(Integer.parseInt((String) (tEndHrBox.getSelectedItem())) + 12);
-							}
-							else {
+							} else {
 								hr = (String) tEndHrBox.getSelectedItem();
 							}
 							min = (String) tEndMinBox.getSelectedItem();
@@ -367,8 +371,6 @@ public class Application {
 										+ secLng;
 							}
 
-							System.out.println(geoLocation);
-							
 							for (Enumeration<AbstractButton> buttons = bg.getElements(); buttons.hasMoreElements();) {
 								AbstractButton button = buttons.nextElement();
 
@@ -451,6 +453,35 @@ public class Application {
 		frmTeamOnze.getContentPane().add(dirLabel);
 
 		btnCalcDist = new JButton("Calc Distance");
+		btnCalcDist.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int option = JOptionPane.showConfirmDialog(null,
+						"This will calculate the distance between all event files in the directory where geo is provided. "
+								+ "Sorts using value of date start." + "Continue?");
+				if (option == JOptionPane.OK_OPTION) {
+					
+					String yr = (String) dStartYr.getSelectedItem();
+				 	String mon = (String) dStartMon.getSelectedItem();
+					String day = (String) dStartDay.getSelectedItem();
+					String dateString = yr + "-" + mon + "-" + day;
+					System.out.println(dateString);
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					try {
+						Date dateSelected = dateFormat.parse(dateString);
+						List<iCalObj> calendarList = TestCalendar.readCalculateCircleDistance(dateSelected);
+						try {
+							for (iCalObj cal : calendarList) {
+								TestCalendar.printICSFile(cal);
+							}
+						} catch (IOException e) {
+							System.err.println("Error printing to ics file");
+						}
+					} catch (ParseException e) {
+						System.err.println("Format is incorrect");
+					}
+				}
+			}
+		});
 		btnCalcDist.setBounds(384, 325, 122, 23);
 		frmTeamOnze.getContentPane().add(btnCalcDist);
 
@@ -516,7 +547,7 @@ public class Application {
 			String location, String geoPosition, String classification) {
 		String path = file.getAbsolutePath().split(file.getName())[0];
 		File file2 = new File(path + file.getName() + ".ics");
-		
+
 		iCalObj calendar = new iCalObj(file2);
 
 		try {
