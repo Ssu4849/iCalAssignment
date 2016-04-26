@@ -21,7 +21,7 @@ import edu.onze.cal.props.Summary;
 
 /**
  * This class defines the VEVENT component
- *
+ * Team Onze
  * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
  */
 public class Event extends Component {

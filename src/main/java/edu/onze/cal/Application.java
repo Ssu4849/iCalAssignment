@@ -7,6 +7,7 @@ import javax.swing.JComboBox;
 
 /**
  * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
+ * team onze
  */
 public class Application {
 
