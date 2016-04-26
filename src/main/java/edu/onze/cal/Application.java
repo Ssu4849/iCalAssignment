@@ -30,8 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
 
 /**
- * This is our UI class
- * Team Onze
+ * This is our UI class Team Onze
+ * 
  * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
  */
 public class Application {
@@ -459,9 +459,9 @@ public class Application {
 						"This will calculate the distance between all event files in the directory where geo is provided. "
 								+ "Sorts using value of date start." + "Continue?");
 				if (option == JOptionPane.OK_OPTION) {
-					
+
 					String yr = (String) dStartYr.getSelectedItem();
-				 	String mon = (String) dStartMon.getSelectedItem();
+					String mon = (String) dStartMon.getSelectedItem();
 					String day = (String) dStartDay.getSelectedItem();
 					String dateString = yr + "-" + mon + "-" + day;
 					System.out.println(dateString);
@@ -474,10 +474,10 @@ public class Application {
 								TestCalendar.printICSFile(cal);
 							}
 						} catch (IOException e) {
-							System.err.println("Error printing to ics file");
+							JOptionPane.showMessageDialog(null, "Error printing to ics file");
 						}
 					} catch (ParseException e) {
-						System.err.println("Format is incorrect");
+						JOptionPane.showMessageDialog(null, "Format of file(s) is incorrect");
 					}
 				}
 			}
@@ -556,21 +556,17 @@ public class Application {
 				event.addGeoPosition(geoPosition);
 			}
 			event.setClassification(Integer.parseInt(classification));
-		} catch (IllegalArgumentException e) {
-			System.err.println(e.getMessage());
-			System.exit(0);
-		} catch (ParseException e) {
-			System.err.println("Date is incorrect format. Usage: 'YYYY-MM-DD HH:MM:SS'");
-			System.exit(0);
-		} catch (IllegalStateException e) {
-			System.err.println(e.getMessage());
-			System.exit(0);
-		}
-		try {
 			TestCalendar.printICSFile(calendar);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, "Date is incorrect format. Usage: 'YYYY-MM-DD HH:MM:SS'");
+		} catch (IllegalStateException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	private boolean checkCoordinate() {
