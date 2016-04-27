@@ -9,6 +9,7 @@ package edu.onze.cal.props;
  */
 public abstract class Property {
 
+	/** Returns the content of the property after the tag */
 	public abstract String getContent();
 
 }

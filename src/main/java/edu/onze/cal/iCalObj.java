@@ -24,6 +24,7 @@ public class iCalObj {
 	public static final String CALENDAR_TRAILER = "END:VCALENDAR" + CRLF;
 	public static final String PRODID = "PRODID:-//Google Inc//Google Calendar 70.9054//EN" + CRLF;
 	public static final String VERSION = "VERSION:2.0" + CRLF;
+	public static final String TIMEZONE = "X-WR-TIMEZONE:Pacific/Honolulu" + CRLF;
 
 	/**
 	 * These properties are optional
@@ -54,6 +55,7 @@ public class iCalObj {
 		content.append(CALENDAR_HEADER);
 		content.append(PRODID);
 		content.append(VERSION);
+		content.append(TIMEZONE);
 		content.append(CALSCALE_GREGORIAN);
 	}
 

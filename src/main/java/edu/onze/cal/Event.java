@@ -147,6 +147,12 @@ public class Event extends Component {
 		return dateStart.compareTo(dateEnd) > 0;
 	}
 
+	/**
+	 * Adds a summary to the event
+	 * 
+	 * @param summary the provided summary
+	 * @return sumLine the summary line that is added to the ics file
+	 */
 	@Override
 	public String addSummary(String summary) {
 		String sumLine = "";
@@ -220,7 +226,7 @@ public class Event extends Component {
 	 *            "PUBLIC"
 	 * @return the classification type added to the event
 	 */
-	public String addComment(String comment) {
+	public String addComment(String comment) throws IllegalArgumentException{
 		String commentLine = "";
 		if (comment.trim().compareTo("") != 0) {
 			commentLine = COMMENT_PROPERTY + comment + CRLF;
