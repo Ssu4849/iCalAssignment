@@ -1,10 +1,14 @@
 package edu.onze.cal;
 
 import java.text.ParseException;
+
 import java.util.Date;
 
 import edu.onze.cal.props.Geo;
 
+
+import edu.onze.cal.props.Geo;
+  
 /**
  * @authors Daralyn Young, Corey Watanabe, Shengyuan Su
  */

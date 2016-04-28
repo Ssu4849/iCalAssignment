@@ -344,7 +344,7 @@ public class TestCalendar {
 		if (dateTime.split(":").length != 3 || dateTime.split("-").length != 3) {
 			System.err.println("Date/Time start is not the correct format");
 			incorrectFormat = true;
-		}
+		} 
 		if (!incorrectFormat) {
 			// Parses user input for anything != int
 			try {

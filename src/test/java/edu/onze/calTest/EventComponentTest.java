@@ -224,7 +224,42 @@ public class EventComponentTest {
 	}
 
 	
-	//Testing Properties
+	//The next 8 test cases are testings from
+		//the props folder that implements UniqueProperty
+	@Test 
+	public void test_Event_Duplicate_Classification(){
+		Event event = new Event();
+		event.setClassification(0);
+		exception.expect(IllegalArgumentException.class);
+		event.setClassification(0);
+	}
+	
+	@Test 
+	public void test_Event_Duplicate_Comment(){
+		Event event = new Event();
+		event.addSummary("Test");
+		event.addComment("Test");
+		exception.expect(IllegalArgumentException.class);
+		event.addComment("Test");
+	}
+	
+	@Test
+	public void test_Event_Duplicate_Description() {
+		Event event = new Event();
+		event.addDescription("Test");
+		exception.expect(IllegalArgumentException.class);
+		event.addDescription("Test");
+	}
+	
+	//There's an error when checking this property
+		/*@Test 
+		public void test_Event_Duplicate_Geo(){
+			Event event = new Event();
+			event.addGeoPosition("Test");
+			exception.expect(IllegalArgumentException.class);
+		event.addGeoPosition("Test");
+	}*/
+	
 	@Test
 	public void test_Event_Duplicate_Location() {
 		Event event = new Event();
@@ -239,14 +274,6 @@ public class EventComponentTest {
 		event.addSummary("Test");
 		exception.expect(IllegalArgumentException.class);
 		event.addSummary("Test");
-	}
-	
-	@Test
-	public void test_Event_Duplicate_Description() {
-		Event event = new Event();
-		event.addDescription("Test");
-		exception.expect(IllegalArgumentException.class);
-		event.addDescription("Test");
 	}
 	
 	
