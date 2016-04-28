@@ -222,4 +222,32 @@ public class EventComponentTest {
 		Event event = new Event();
 		assertEquals(event.getPropertySize(), 0);
 	}
+
+	
+	//Testing Properties
+	@Test
+	public void test_Event_Duplicate_Location() {
+		Event event = new Event();
+		event.addLocation("Test");
+		exception.expect(IllegalArgumentException.class);
+		event.addLocation("Test");
+	}
+	
+	@Test
+	public void test_Event_Duplicate_Summary() {
+		Event event = new Event();
+		event.addSummary("Test");
+		exception.expect(IllegalArgumentException.class);
+		event.addSummary("Test");
+	}
+	
+	@Test
+	public void test_Event_Duplicate_Description() {
+		Event event = new Event();
+		event.addDescription("Test");
+		exception.expect(IllegalArgumentException.class);
+		event.addDescription("Test");
+	}
+	
+	
 }
