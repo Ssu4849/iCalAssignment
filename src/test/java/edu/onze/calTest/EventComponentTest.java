@@ -237,7 +237,6 @@ public class EventComponentTest {
 	@Test 
 	public void test_Event_Duplicate_Comment(){
 		Event event = new Event();
-		event.addSummary("Test");
 		event.addComment("Test");
 		exception.expect(IllegalArgumentException.class);
 		event.addComment("Test");
@@ -250,15 +249,16 @@ public class EventComponentTest {
 		exception.expect(IllegalArgumentException.class);
 		event.addDescription("Test");
 	}
-	
-	//There's an error when checking this property
-		/*@Test 
-		public void test_Event_Duplicate_Geo(){
-			Event event = new Event();
-			event.addGeoPosition("Test");
-			exception.expect(IllegalArgumentException.class);
+
+
+	@Test 
+	public void test_Event_Duplicate_Geo() throws IllegalStateException{
+		Event event = new Event();
 		event.addGeoPosition("Test");
-	}*/
+		exception.expect(IllegalArgumentException.class);
+		event.addGeoPosition("Test");
+	}	
+	
 	
 	@Test
 	public void test_Event_Duplicate_Location() {
