@@ -222,7 +222,16 @@ public class EventComponentTest {
 		Event event = new Event();
 		assertEquals(event.getPropertySize(), 0);
 	}
+	
+	
+	@Test
+	public void test_Event_Description() {
+	    Event event = new Event();
+	    event.addDescription("test");
 
+	    assertEquals(event.addDescription(null), "test");
+	    /*assertEquals(event.getDescription(), "test");*/
+	}
 	
 	/*The next 6 test cases checks for exceptions*/
 	@Test 
