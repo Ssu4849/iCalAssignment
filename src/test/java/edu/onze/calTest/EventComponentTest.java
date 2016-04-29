@@ -224,8 +224,7 @@ public class EventComponentTest {
 	}
 
 	
-	//The next 8 test cases are testings from
-		//the props folder that implements UniqueProperty
+	/*The next 6 test cases checks for exceptions*/
 	@Test 
 	public void test_Event_Duplicate_Classification(){
 		Event event = new Event();
