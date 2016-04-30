@@ -317,20 +317,25 @@ public class Event extends Component {
 	public String setClassification(int access) {
 		String returnStr = "";
 		switch (access) {
-		case 2:
-			String s1 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+		case 1:
+			String s1 = CLASSIFICATION_PROPERTY + "PUBLIC" + CRLF;
 			addProperty(new Classification(s1));
 			returnStr = s1;
 			break;
-		case 3:
-			String s2 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
+		case 2:
+			String s2 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
 			addProperty(new Classification(s2));
 			returnStr = s2;
 			break;
-		default:
-			String s3 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+		case 3:
+			String s3 = CLASSIFICATION_PROPERTY + "CONFIDENTIAL" + CRLF;
 			addProperty(new Classification(s3));
 			returnStr = s3;
+			break;
+		default:
+			String s4 = CLASSIFICATION_PROPERTY + "PRIVATE" + CRLF;
+			addProperty(new Classification(s4));
+			returnStr = s4;
 			break;
 		}
 		return returnStr;
