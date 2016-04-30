@@ -24,24 +24,6 @@ public class EventComponentTest {
 	public final ExpectedException exception = ExpectedException.none();
 
 	@Test
-	public void testAddSummary() {
-		Event event = new Event();
-
-		String summary = "This is a test summary";
-
-		assertEquals(Event.SUMMARY_PROPERTY + summary + Event.CRLF, event.addSummary(summary));
-	}
-
-	@Test
-	public void test_Add_Location() {
-		Event event = new Event();
-
-		String location = "Campus Center";
-
-		assertEquals(Event.LOCATION_PROPERTY + location + Event.CRLF, event.addLocation(location));
-	}
-
-	@Test
 	public void test_Add_DateTime() {
 		Event event = new Event();
 
@@ -210,6 +192,34 @@ public class EventComponentTest {
 		event.addTimeDateSpan(dateTimeStart, dateTimeEnd);
 	}
 	
+	@Test 
+	public void test_Event_Geo_Add_Out_Of_Range_Longitude() throws IllegalArgumentException{
+		Event event = new Event();
+		exception.expect(IllegalStateException.class);
+		event.addGeoPosition("20,20,20 181,20,20");
+	}	
+	
+	@Test 
+	public void test_Event_Geo_Add_Out_Of_Range_Longitude2() throws IllegalArgumentException{
+		Event event = new Event();
+		exception.expect(IllegalStateException.class);
+		event.addGeoPosition("20,20,20 -181,20,20");
+	}	
+	
+	@Test 
+	public void test_Event_Geo_Add_Out_Of_Range_Latitude1() throws IllegalArgumentException{
+		Event event = new Event();
+		exception.expect(IllegalStateException.class);
+		event.addGeoPosition("-91,20,20 20,20,20");
+	}	
+	
+	@Test 
+	public void test_Event_Geo_Add_Out_Of_Range_Latitude2() throws IllegalArgumentException{
+		Event event = new Event();
+		exception.expect(IllegalStateException.class);
+		event.addGeoPosition("91,20,20 20,20,20");
+	}	
+	
 	@Test
 	public void test_Size_Of_PropertyList_One_Property() {
 		Event event = new Event();
@@ -224,12 +234,40 @@ public class EventComponentTest {
 	}
 	
 	
+	/*The next following test cases checks for return values of added properties*/
+	
 	@Test
 	public void test_Event_Description() {
 	    Event event = new Event();
-	    event.addDescription("test");
-
-	    assertEquals(event.addDescription(null), "test");
+	    assertEquals(event.addDescription("test"), "DESCRIPTION:test" + "\r\n");
+	    /*assertEquals(event.getDescription(), "test");*/
+	}
+	
+	@Test
+	public void test_Event_Comment() {
+	    Event event = new Event();
+	    assertEquals(event.addComment("test"), "COMMENT:test" + "\r\n");
+	    /*assertEquals(event.getDescription(), "test");*/
+	}
+	
+	@Test
+	public void test_Event_Summary() {
+	    Event event = new Event();
+	    assertEquals(event.addSummary("test"), "SUMMARY:test" + "\r\n");
+	    /*assertEquals(event.getDescription(), "test");*/
+	}
+	
+	@Test
+	public void test_Event_Location() {
+	    Event event = new Event();
+	    assertEquals(event.addLocation("test"), "LOCATION:test" + "\r\n");
+	    /*assertEquals(event.getDescription(), "test");*/
+	}
+	
+	@Test
+	public void test_Event_GEO() {
+	    Event event = new Event();
+	    assertEquals(event.addGeoPosition("20,20,20 20,20,20"), "GEO:20.338888;20.338888" + "\r\n");
 	    /*assertEquals(event.getDescription(), "test");*/
 	}
 	
@@ -240,14 +278,6 @@ public class EventComponentTest {
 		event.setClassification(0);
 		exception.expect(IllegalArgumentException.class);
 		event.setClassification(0);
-	}
-	
-	@Test 
-	public void test_Event_Duplicate_Comment(){
-		Event event = new Event();
-		event.addComment("Test");
-		exception.expect(IllegalArgumentException.class);
-		event.addComment("Test");
 	}
 	
 	@Test
@@ -262,9 +292,9 @@ public class EventComponentTest {
 	@Test 
 	public void test_Event_Duplicate_Geo() throws IllegalStateException{
 		Event event = new Event();
-		event.addGeoPosition("Test");
+		event.addGeoPosition("20,20,20 20,20,20");
 		exception.expect(IllegalArgumentException.class);
-		event.addGeoPosition("Test");
+		event.addGeoPosition("20,20,20 20,20,20");
 	}	
 	
 	

@@ -99,7 +99,7 @@ public class Event extends Component {
 	 *             Exception is date is incorrect format
 	 */
 	@Override
-	public String addTimeDateSpan(String dateStart, String dateEnd) throws ParseException {
+	public String addTimeDateSpan(String dateStart, String dateEnd) throws ParseException, IllegalArgumentException {
 		String dateStartParsed = parseDate(dateStart);
 		String dateEndParsed = parseDate(dateEnd);
 		if (endDateGtrStartDate(dateStart, dateEnd)) {
@@ -154,7 +154,7 @@ public class Event extends Component {
 	 * @return sumLine the summary line that is added to the ics file
 	 */
 	@Override
-	public String addSummary(String summary) {
+	public String addSummary(String summary) throws IllegalArgumentException {
 		String sumLine = "";
 		if (summary.trim().compareTo("") == 0) {
 			sumLine = SUMMARY_PROPERTY + "(No Title)" + CRLF;
@@ -172,7 +172,7 @@ public class Event extends Component {
 	 *            the description of the event
 	 * @return the line to add to the ics file under event component
 	 */
-	public String addDescription(String description) {
+	public String addDescription(String description) throws IllegalArgumentException{
 		String descLine = "";
 		if (description.trim().compareTo("") != 0) {
 			descLine = DESCRIPTION_PROPERTY + description + CRLF;
@@ -188,7 +188,7 @@ public class Event extends Component {
 	 *            the location of the event
 	 * @return the line to add to the ics file under event component
 	 */
-	public String addLocation(String location) {
+	public String addLocation(String location) throws IllegalArgumentException {
 		String locLine = "";
 		if (location.trim().compareTo("") != 0) {
 			locLine = LOCATION_PROPERTY + location + CRLF;
@@ -206,7 +206,7 @@ public class Event extends Component {
 	 * @throws IllegalStateException
 	 *             if geoposition is out of range
 	 */
-	public String addGeoPosition(String geoPosition) throws IllegalStateException {
+	public String addGeoPosition(String geoPosition) throws IllegalStateException, IllegalArgumentException {
 		String geoLine = "";
 		if (geoPosition.compareTo("") != 0) {
 			String geoPositionFormatted = parseGeographicPosition(geoPosition);
@@ -226,7 +226,7 @@ public class Event extends Component {
 	 *            "PUBLIC"
 	 * @return the classification type added to the event
 	 */
-	public String addComment(String comment) throws IllegalArgumentException{
+	public String addComment(String comment) {
 		String commentLine = "";
 		if (comment.trim().compareTo("") != 0) {
 			commentLine = COMMENT_PROPERTY + comment + CRLF;
